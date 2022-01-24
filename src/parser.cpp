@@ -70,7 +70,7 @@ QPair<QString, QString> Parser::parse_attribute() {
   QString name = consume_alphanumeric();
   consume_whitespace();
 
-  if (peek() == '>') {
+  if (peek() == '>') {  // check if attribute has a value
     return {name, ""};
   } else {
     assert(consume() == '=');
