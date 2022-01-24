@@ -31,16 +31,18 @@ void MainWindow::navigate(QString url) {
   QNetworkRequest request;
   request.setUrl(url);
 
-  m_reply = manager->get(request);
-  connect(m_reply, SIGNAL(finished()), this, SLOT(handle_reply()));
-  connect(m_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,
-          SLOT(handle_reply_error(QNetworkReply::NetworkError)));
+  manager->get(request);
+
+  connect(manager, &QNetworkAccessManager::finished, this,
+          &MainWindow::handle_reply);
 }
 
-void MainWindow::handle_reply() { qDebug() << QString(m_reply->readAll()); }
-
-void MainWindow::handle_reply_error(QNetworkReply::NetworkError error) {
-  qDebug() << error;
+void MainWindow::handle_reply(QNetworkReply* reply) {
+  if (reply->error()) {
+    qWarning() << "Error:" << reply->errorString();
+    return;
+  }
+  qDebug() << "Response:" << reply->readAll();
 }
 
 void MainWindow::clear_page() {
