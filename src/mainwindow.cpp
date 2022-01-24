@@ -15,6 +15,8 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
           [=]() { navigate(m_urlbar->text()); });
   layout->addWidget(m_urlbar);
 
+  // TODO: add back button
+
   m_page_layout = new QVBoxLayout();
   m_page_layout->setAlignment(Qt::AlignTop);
   layout->addLayout(m_page_layout);
@@ -51,6 +53,7 @@ void MainWindow::handle_reply(QNetworkReply* reply) {
   QString body = QString(reply->readAll());
   Node root = parse(body);
 
+  setWindowTitle(reply->url().toString() + " - Osmium");
   m_urlbar->setText(reply->url().toString());
   clear_page();
   render(root, Node());
@@ -60,6 +63,7 @@ void MainWindow::render(Node n, Node parent) {
   if (n.type() == NodeType::Element) {
     if (n.text() == "br")
       m_page_layout->addWidget(new QLabel());
+    // TODO: render img tag
 
     for (auto c : n.children())
       render(c, n);
@@ -92,7 +96,10 @@ void MainWindow::render(Node n, Node parent) {
       font.setUnderline(true);
     } else if (parent.text() == "s") {
       font.setStrikeOut(true);
+    } else if (parent.text() == "title") {
+      setWindowTitle(n.text() + " - Osmium");
     }
+    // TODO: render a tag
 
     label->setFont(font);
     m_page_layout->addWidget(label);
