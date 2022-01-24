@@ -71,9 +71,11 @@ void MainWindow::render(Node n, Node parent) {
     if (kRenderBlacklist.contains(parent.text()))
       return;
 
-    QLabel* label = new QLabel();
+    QString content = n.text().replace("\n", "");
+
+    ClickableLabel* label = new ClickableLabel();
     label->setTextFormat(Qt::PlainText);
-    label->setText(n.text().replace("\n", ""));
+    label->setText(content);
 
     QFont font = label->font();
     font.setPointSize(16);
@@ -96,10 +98,19 @@ void MainWindow::render(Node n, Node parent) {
       font.setUnderline(true);
     } else if (parent.text() == "s") {
       font.setStrikeOut(true);
+    } else if (parent.text() == "a") {
+      QPalette palette = label->palette();
+      palette.setColor(QPalette::WindowText, Qt::blue);
+      label->setPalette(palette);
+
+      label->href(parent.attrs()["href"]);
+
+      connect(label, &ClickableLabel::clicked, this,
+              std::bind([&](ClickableLabel* label) { navigate(label->m_href); },
+                        label));
     } else if (parent.text() == "title") {
       setWindowTitle(n.text() + " - Osmium");
     }
-    // TODO: render a tag
 
     label->setFont(font);
     m_page_layout->addWidget(label);

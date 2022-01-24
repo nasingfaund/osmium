@@ -1,4 +1,5 @@
 #pragma once
+#include <QLabel>
 #include <QLineEdit>
 #include <QMainWindow>
 #include <QVBoxLayout>
@@ -22,4 +23,18 @@ class MainWindow : public QMainWindow {
   void handle_reply(QNetworkReply* reply);
   void render(Node n, Node parent);
   void clear_page();
+};
+
+class ClickableLabel : public QLabel {
+  Q_OBJECT
+ public:
+  explicit ClickableLabel(QWidget* parent = Q_NULLPTR) : QLabel(parent) {}
+  QString m_href;
+  void href(QString url) { m_href = url; }
+
+ signals:
+  void clicked();
+
+ protected:
+  void mousePressEvent([[maybe_unused]] QMouseEvent* event) { emit clicked(); }
 };
