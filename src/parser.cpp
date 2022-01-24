@@ -19,7 +19,7 @@ QVector<Node> Parser::parse_nodes() {
 
   while (true) {
     consume_whitespace();
-    if (eof() || m_input.right(m_pos).startsWith("</"))
+    if (eof() || rest().startsWith("</"))
       break;
     Node node = parse_node();
     nodes.push_back(node);
@@ -39,7 +39,7 @@ Node Parser::parse_node() {
 Node Parser::parse_textnode() {
   QString content;
   while (peek() != '<')
-    content += consume();
+    content.push_back(consume());
   return Node(content);
 }
 
@@ -94,6 +94,8 @@ QMap<QString, QString> Parser::parse_attributes() {
   return attributes;
 }
 
+QString Parser::rest() { return m_input.mid(m_pos); }
+
 QChar Parser::consume() {
   QChar c = peek();
   m_pos++;
@@ -108,11 +110,14 @@ void Parser::consume_whitespace() {
 QString Parser::consume_alphanumeric() {
   QString out;
   while (peek().isDigit() || peek().isLetter())
-    out += consume();
+    out.push_back(consume());
   return out;
 }
 
-// TODO: check for EOF
-QChar Parser::peek() { return m_input[m_pos]; }
+QChar Parser::peek() {
+  if (eof())
+    return 0;
+  return m_input[m_pos];
+}
 
 bool Parser::eof() { return m_pos >= m_input.length(); }

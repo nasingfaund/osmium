@@ -22,7 +22,10 @@ class Parser {
 
   void consume_whitespace();
   QString consume_alphanumeric();
+  QString rest();
   QChar consume();
   QChar peek();
   bool eof();
 };
+
+Node parse(QString input);
