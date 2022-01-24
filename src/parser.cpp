@@ -21,8 +21,9 @@ QVector<Node> Parser::parse_nodes() {
     consume_whitespace();
     if (eof() || rest().startsWith("</"))
       break;
+
     Node node = parse_node();
-    if (node.text() != "")
+    if (node.type() != NodeType::Null)
       nodes.push_back(node);
   }
   return nodes;
@@ -57,12 +58,12 @@ Node Parser::parse_element() {
     consume();
     consume();
     consume();
-    return Node("");
+    return Node();
   }
 
   // skip DOCTYPE declarations
   if (tag_name.startsWith("!"))
-    return Node("");
+    return Node();
   if (kVoidElements.contains(tag_name))
     return Node(tag_name, attrs, {});
 

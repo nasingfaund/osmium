@@ -3,12 +3,14 @@
 #include <QVector>
 
 enum NodeType {
+  Null,
   Element,
   TextNode,
 };
 
 class Node {
  public:
+  Node() { m_type = NodeType::Null; }
   Node(QString data) {
     m_type = NodeType::TextNode;
     m_text = data;

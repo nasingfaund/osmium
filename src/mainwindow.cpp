@@ -53,7 +53,7 @@ void MainWindow::handle_reply(QNetworkReply* reply) {
 
   m_urlbar->setText(reply->url().toString());
   clear_page();
-  render(root, Node(""));
+  render(root, Node());
 }
 
 void MainWindow::render(Node n, Node parent) {
