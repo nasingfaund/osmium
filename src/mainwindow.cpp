@@ -22,12 +22,25 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
   setGeometry(200, 100, 800, 600);
   setCentralWidget(widget);
 
-  navigate("");
+  navigate("http://www.google.com");
 }
 
 void MainWindow::navigate(QString url) {
-  m_page_layout->addWidget(new QLabel("Hello Osmium! 1"));
-  m_page_layout->addWidget(new QLabel("Hello Osmium! 2"));
+  QNetworkAccessManager* manager = new QNetworkAccessManager();
+
+  QNetworkRequest request;
+  request.setUrl(url);
+
+  m_reply = manager->get(request);
+  connect(m_reply, SIGNAL(finished()), this, SLOT(handle_reply()));
+  connect(m_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,
+          SLOT(handle_reply_error(QNetworkReply::NetworkError)));
+}
+
+void MainWindow::handle_reply() { qDebug() << QString(m_reply->readAll()); }
+
+void MainWindow::handle_reply_error(QNetworkReply::NetworkError error) {
+  qDebug() << error;
 }
 
 void MainWindow::clear_page() {
