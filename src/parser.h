@@ -29,6 +29,7 @@ class Parser {
   QString rest();
   QChar consume();
   QChar peek();
+  bool is_alphanumeric(QChar c);
   bool eof();
 };
 

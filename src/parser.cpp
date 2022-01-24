@@ -45,12 +45,12 @@ Node Parser::parse_textnode() {
 
 Node Parser::parse_element() {
   assert(consume() == '<');
-  // TODO: skip comments
   QString tag_name = consume_alphanumeric();
   QMap<QString, QString> attrs = parse_attributes();
   assert(consume() == '>');
 
-  if (kVoidElements.contains(tag_name))
+  // TODO: skip comments
+  if (tag_name.startsWith("!") || kVoidElements.contains(tag_name))
     return Node(tag_name, attrs, {});
 
   QVector<Node> children = parse_nodes();
@@ -112,7 +112,7 @@ void Parser::consume_whitespace() {
 
 QString Parser::consume_alphanumeric() {
   QString out;
-  while (peek().isDigit() || peek().isLetter())
+  while (is_alphanumeric(peek()))
     out.push_back(consume());
   return out;
 }
@@ -124,3 +124,7 @@ QChar Parser::peek() {
 }
 
 bool Parser::eof() { return m_pos >= m_input.length(); }
+
+bool Parser::is_alphanumeric(QChar c) {
+  return c.isDigit() || c.isLetter() || c == '!';
+}
