@@ -16,7 +16,7 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
           [=]() { navigate(m_urlbar->text()); });
   layout->addWidget(m_urlbar);
 
-  // TODO: add back button
+  // TODO: add back and refresh button
 
   QWidget* page_widget = new QWidget();
   QScrollArea* scroll_area = new QScrollArea();

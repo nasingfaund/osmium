@@ -48,18 +48,18 @@ Node Parser::parse_textnode() {
 Node Parser::parse_element() {
   assert(consume() == '<');
   QString tag_name = consume_alphanumeric();
-  QMap<QString, QString> attrs = parse_attributes();
-  assert(consume() == '>');
 
-  // skip comments
+  // skip comment
   if (tag_name == "!--") {
     while (!rest().startsWith("-->"))
       consume();
-    consume();
-    consume();
-    consume();
+    for (int i = 0; i < 3; i++)
+      consume();
     return Node();
   }
+
+  QMap<QString, QString> attrs = parse_attributes();
+  assert(consume() == '>');
 
   // skip DOCTYPE declarations
   if (tag_name.startsWith("!"))
@@ -112,6 +112,8 @@ QMap<QString, QString> Parser::parse_attributes() {
   QMap<QString, QString> attributes;
   while (true) {
     consume_whitespace();
+    if (rest().startsWith("/>"))
+      consume();
     if (peek() == '>')
       break;
     QPair<QString, QString> pair = parse_attribute();
@@ -149,5 +151,5 @@ QChar Parser::peek() {
 bool Parser::eof() { return m_pos >= m_input.length(); }
 
 bool Parser::is_alphanumeric(QChar c) {
-  return c.isDigit() || c.isLetter() || c == '!';
+  return c.isDigit() || c.isLetter() || c == '!' || c == ':' || c == '-';
 }
