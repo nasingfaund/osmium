@@ -50,8 +50,18 @@ Node Parser::parse_element() {
   QMap<QString, QString> attrs = parse_attributes();
   assert(consume() == '>');
 
-  // TODO: skip comments
-  if (tag_name.startsWith("!"))  // skip DOCTYPE declarations
+  // skip comments
+  if (tag_name == "!--") {
+    while (!rest().startsWith("-->"))
+      consume();
+    consume();
+    consume();
+    consume();
+    return Node("");
+  }
+
+  // skip DOCTYPE declarations
+  if (tag_name.startsWith("!"))
     return Node("");
   if (kVoidElements.contains(tag_name))
     return Node(tag_name, attrs, {});
@@ -70,7 +80,8 @@ QPair<QString, QString> Parser::parse_attribute() {
   QString name = consume_alphanumeric();
   consume_whitespace();
 
-  if (peek() == '>') {  // check if attribute has a value
+  // check if attribute has a value
+  if (peek() == '>') {
     return {name, ""};
   } else {
     assert(consume() == '=');
@@ -82,13 +93,17 @@ QPair<QString, QString> Parser::parse_attribute() {
 
 QString Parser::parse_attribute_value() {
   QChar quote = consume();
-  // TODO: allow attributes without quotes
-  assert(quote == '"' || quote == '\'');
-
   QString value;
-  while (peek() != quote)
-    value += consume();
-  assert(consume() == quote);
+
+  if (quote == '"' || quote == '\'') {
+    while (peek() != quote)
+      value.push_back(consume());
+    assert(consume() == quote);
+  } else {
+    while (!is_alphanumeric(peek()))
+      value.push_back(consume());
+  }
+
   return value;
 }
 

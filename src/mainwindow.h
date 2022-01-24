@@ -13,11 +13,8 @@ class MainWindow : public QMainWindow {
   MainWindow(char* argv[], QWidget* parent = nullptr);
 
  private:
-  const QVector<QString> kRenderBlacklist = {
-      "style",
-      "script",
-      "head",
-  };
+  const QVector<QString> kRenderBlacklist = {"style", "script", "head"};
+
   QVBoxLayout* m_page_layout;
   QLineEdit* m_urlbar;
 
