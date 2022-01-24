@@ -61,9 +61,31 @@ void MainWindow::handle_reply(QNetworkReply* reply) {
 
 void MainWindow::render(Node n, Node parent) {
   if (n.type() == NodeType::Element) {
-    if (n.text() == "br")
+    if (n.text() == "br") {
       m_page_layout->addWidget(new QLabel());
-    // TODO: render img tag
+    } else if (n.text() == "img") {
+      QNetworkAccessManager manager;
+      QNetworkRequest req(QUrl(n.attrs()["src"]));
+
+      QNetworkReply* reply = manager.get(req);
+      QEventLoop loop;
+      connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+      loop.exec();
+
+      int status_code =
+          reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+      if (status_code != 200) {
+        qWarning() << "Failed to download" << n.attrs()["src"];
+        return;
+      }
+
+      QByteArray bytes = reply->readAll();
+      QImage img;
+      img.loadFromData(bytes);
+      QLabel* label = new QLabel();
+      label->setPixmap(QPixmap::fromImage(img));
+      m_page_layout->addWidget(label);
+    }
 
     for (auto c : n.children())
       render(c, n);
