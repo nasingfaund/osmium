@@ -18,10 +18,12 @@ class MainWindow : public QMainWindow {
 
   QVBoxLayout* m_page_layout;
   QLineEdit* m_urlbar;
+  QString m_current_url;
 
   void navigate(QString url);
   void handle_reply(QNetworkReply* reply);
   void render(Node n, Node parent);
+  QString make_absolute(QString current_url, QString url);
   void clear_page();
 };
 

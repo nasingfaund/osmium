@@ -61,8 +61,9 @@ void MainWindow::handle_reply(QNetworkReply* reply) {
   QString body = QString(reply->readAll());
   Node root = parse(body);
 
-  setWindowTitle(reply->url().toString() + " - Osmium");
-  m_urlbar->setText(reply->url().toString());
+  m_current_url = reply->url().toString();
+  setWindowTitle(m_current_url + " - Osmium");
+  m_urlbar->setText(m_current_url);
   clear_page();
   render(root, Node());
 }
@@ -72,8 +73,10 @@ void MainWindow::render(Node n, Node parent) {
     if (n.text() == "br") {
       m_page_layout->addWidget(new QLabel());
     } else if (n.text() == "img") {
+      QString url = make_absolute(m_current_url, n.attrs()["src"]);
+
       QNetworkAccessManager manager;
-      QNetworkRequest req(QUrl(n.attrs()["src"]));
+      QNetworkRequest req = QNetworkRequest(QUrl(url));
 
       QNetworkReply* reply = manager.get(req);
       QEventLoop loop;
@@ -83,7 +86,7 @@ void MainWindow::render(Node n, Node parent) {
       int status_code =
           reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
       if (status_code != 200) {
-        qWarning() << "Failed to download" << n.attrs()["src"];
+        qWarning() << "Failed to download" << url;
         return;
       }
 
@@ -134,7 +137,7 @@ void MainWindow::render(Node n, Node parent) {
       label->setPalette(palette);
 
       QString href = parent.attrs().value("href");
-      label->setHref(href);
+      label->setHref(make_absolute(m_current_url, href));
 
       connect(label, &ClickableLabel::clicked, this,
               std::bind([&](ClickableLabel* label) { navigate(label->href()); },
@@ -148,6 +151,14 @@ void MainWindow::render(Node n, Node parent) {
   } else {
     assert(false);
   }
+}
+
+// FIXME: move it somewhere
+QString MainWindow::make_absolute(QString current_url, QString url) {
+  if (url.contains("://"))
+    return url;
+
+  return QUrl(current_url).resolved(QUrl(url)).toString();
 }
 
 void MainWindow::clear_page() {
