@@ -3,11 +3,9 @@
 
 #include "mainwindow.h"
 #include "node.h"
+#include "parser.h"
 
 int main(int argc, char *argv[]) {
-  Node text1 = Node("Hello World!");
-  Node elem1 = Node("h1", {}, {text1});
-
   /*
   QApplication a(argc, argv);
   MainWindow w;

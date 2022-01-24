@@ -14,11 +14,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
-set(PROJECT_SOURCES
-        main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        node.h
+file(GLOB PROJECT_SOURCES
+     "src/*.h"
+     "src/*.cpp"
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
