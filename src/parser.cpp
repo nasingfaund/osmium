@@ -50,6 +50,9 @@ Node Parser::parse_element() {
   QMap<QString, QString> attrs = parse_attributes();
   assert(consume() == '>');
 
+  if (kVoidElements.contains(tag_name))
+    return Node(tag_name, attrs, {});
+
   QVector<Node> children = parse_nodes();
 
   assert(consume() == '<');

@@ -10,6 +10,10 @@ class Parser {
   QVector<Node> parse_nodes();
 
  private:
+  const QVector<QString> kVoidElements = {
+      "area",  "base", "br",   "col",   "embed",  "hr",    "img",
+      "input", "link", "meta", "param", "source", "track", "wbr"};
+
   QString m_input;
   int m_pos;
 
