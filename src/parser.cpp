@@ -22,7 +22,8 @@ QVector<Node> Parser::parse_nodes() {
     if (eof() || rest().startsWith("</"))
       break;
     Node node = parse_node();
-    nodes.push_back(node);
+    if (node.text() != "")
+      nodes.push_back(node);
   }
   return nodes;
 }
@@ -50,7 +51,9 @@ Node Parser::parse_element() {
   assert(consume() == '>');
 
   // TODO: skip comments
-  if (tag_name.startsWith("!") || kVoidElements.contains(tag_name))
+  if (tag_name.startsWith("!"))  // skip DOCTYPE declarations
+    return Node("");
+  if (kVoidElements.contains(tag_name))
     return Node(tag_name, attrs, {});
 
   QVector<Node> children = parse_nodes();
@@ -66,11 +69,15 @@ Node Parser::parse_element() {
 QPair<QString, QString> Parser::parse_attribute() {
   QString name = consume_alphanumeric();
   consume_whitespace();
-  // TODO: allow attributes without values
-  assert(consume() == '=');
-  consume_whitespace();
-  QString value = parse_attribute_value();
-  return {name, value};
+
+  if (peek() == '>') {
+    return {name, ""};
+  } else {
+    assert(consume() == '=');
+    consume_whitespace();
+    QString value = parse_attribute_value();
+    return {name, value};
+  }
 }
 
 QString Parser::parse_attribute_value() {
