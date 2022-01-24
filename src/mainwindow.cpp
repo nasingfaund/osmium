@@ -98,15 +98,16 @@ void MainWindow::render(Node n, Node parent) {
       font.setUnderline(true);
     } else if (parent.text() == "s") {
       font.setStrikeOut(true);
-    } else if (parent.text() == "a") {
+    } else if (parent.text() == "a" && parent.attrs().contains("href")) {
       QPalette palette = label->palette();
       palette.setColor(QPalette::WindowText, Qt::blue);
       label->setPalette(palette);
 
-      label->href(parent.attrs()["href"]);
+      QString href = parent.attrs().value("href");
+      label->setHref(href);
 
       connect(label, &ClickableLabel::clicked, this,
-              std::bind([&](ClickableLabel* label) { navigate(label->m_href); },
+              std::bind([&](ClickableLabel* label) { navigate(label->href()); },
                         label));
     } else if (parent.text() == "title") {
       setWindowTitle(n.text() + " - Osmium");
