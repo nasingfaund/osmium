@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 
 #include <QDebug>
+#include <QFont>
 #include <QLabel>
 
 #include "parser.h"
@@ -57,13 +58,44 @@ void MainWindow::handle_reply(QNetworkReply* reply) {
 
 void MainWindow::render(Node n, Node parent) {
   if (n.type() == NodeType::Element) {
+    if (n.text() == "br")
+      m_page_layout->addWidget(new QLabel());
+
     for (auto c : n.children())
       render(c, n);
   } else if (n.type() == NodeType::TextNode) {
     if (kRenderBlacklist.contains(parent.text()))
       return;
 
-    m_page_layout->addWidget(new QLabel(n.text()));
+    QLabel* label = new QLabel();
+    label->setTextFormat(Qt::PlainText);
+    label->setText(n.text().replace("\n", ""));
+
+    QFont font = label->font();
+    font.setPointSize(16);
+    font.setFamily("Fira Sans");
+
+    if (parent.text() == "h1") {
+      font.setWeight(QFont::Bold);
+      font.setPointSize(32);
+    } else if (parent.text() == "h2") {
+      font.setWeight(QFont::Bold);
+      font.setPointSize(23);
+    } else if (parent.text() == "h3") {
+      font.setWeight(QFont::Bold);
+      font.setPointSizeF(18.72);
+    } else if (parent.text() == "h4" || parent.text() == "b") {
+      font.setWeight(QFont::Bold);
+    } else if (parent.text() == "i") {
+      font.setItalic(true);
+    } else if (parent.text() == "u") {
+      font.setUnderline(true);
+    } else if (parent.text() == "s") {
+      font.setStrikeOut(true);
+    }
+
+    label->setFont(font);
+    m_page_layout->addWidget(label);
   } else {
     assert(false);
   }
