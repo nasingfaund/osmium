@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QFont>
 #include <QLabel>
+#include <QScrollArea>
 
 #include "parser.h"
 
@@ -17,9 +18,16 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
 
   // TODO: add back button
 
+  QWidget* page_widget = new QWidget();
+  QScrollArea* scroll_area = new QScrollArea();
+  scroll_area->setFrameShape(QFrame::NoFrame);
+  scroll_area->setWidgetResizable(true);
+  scroll_area->setWidget(page_widget);
+
   m_page_layout = new QVBoxLayout();
   m_page_layout->setAlignment(Qt::AlignTop);
-  layout->addLayout(m_page_layout);
+  page_widget->setLayout(m_page_layout);
+  layout->addWidget(scroll_area);
 
   widget->setLayout(layout);
   setGeometry(200, 100, 800, 600);
