@@ -13,11 +13,16 @@ class MainWindow : public QMainWindow {
   MainWindow(char* argv[], QWidget* parent = nullptr);
 
  private:
+  const QVector<QString> kRenderBlacklist = {
+      "style",
+      "script",
+      "head",
+  };
   QVBoxLayout* m_page_layout;
   QLineEdit* m_urlbar;
 
   void navigate(QString url);
   void handle_reply(QNetworkReply* reply);
-  void render(Node n);
+  void render(Node n, Node parent);
   void clear_page();
 };

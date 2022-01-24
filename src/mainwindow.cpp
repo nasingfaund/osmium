@@ -10,6 +10,8 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
   QVBoxLayout* layout = new QVBoxLayout();
 
   m_urlbar = new QLineEdit();
+  connect(m_urlbar, &QLineEdit::returnPressed, this,
+          [=]() { navigate(m_urlbar->text()); });
   layout->addWidget(m_urlbar);
 
   m_page_layout = new QVBoxLayout();
@@ -24,6 +26,8 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
 }
 
 void MainWindow::navigate(QString url) {
+  if (!url.contains("://"))
+    url = "http://" + url;
   QNetworkAccessManager* manager = new QNetworkAccessManager();
 
   QNetworkRequest request;
@@ -41,19 +45,24 @@ void MainWindow::handle_reply(QNetworkReply* reply) {
     return;
   }
 
+  // TODO: follow redirects
+
   QString body = QString(reply->readAll());
   Node root = parse(body);
 
   m_urlbar->setText(reply->url().toString());
   clear_page();
-  render(root);
+  render(root, Node(""));
 }
 
-void MainWindow::render(Node n) {
+void MainWindow::render(Node n, Node parent) {
   if (n.type() == NodeType::Element) {
     for (auto c : n.children())
-      render(c);
+      render(c, n);
   } else if (n.type() == NodeType::TextNode) {
+    if (kRenderBlacklist.contains(parent.text()))
+      return;
+
     m_page_layout->addWidget(new QLabel(n.text()));
   } else {
     assert(false);
