@@ -56,7 +56,12 @@ void MainWindow::handle_reply(QNetworkReply* reply) {
     return;
   }
 
-  // TODO: follow redirects
+  int status_code =
+      reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+  if (300 < status_code && status_code < 400) {
+    navigate(reply->rawHeader("Location"));
+    return;
+  }
 
   QString body = QString(reply->readAll());
   Node root = parse(body);

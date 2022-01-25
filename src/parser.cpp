@@ -49,12 +49,13 @@ Node Parser::parse_element() {
   assert(consume() == '<');
   QString tag_name = consume_alphanumeric();
 
-  // skip comment
   if (tag_name == "!--") {
-    while (!rest().startsWith("-->"))
-      consume();
-    for (int i = 0; i < 3; i++)
-      consume();
+    skip_until("-->");
+    return Node();
+  }
+
+  if (tag_name == "script") {
+    skip_until("</script>");
     return Node();
   }
 
@@ -120,6 +121,13 @@ QMap<QString, QString> Parser::parse_attributes() {
     attributes[pair.first] = pair.second;
   }
   return attributes;
+}
+
+void Parser::skip_until(QString s) {
+  while (!rest().startsWith(s))
+    consume();
+  for (int i = 0; i < s.length(); i++)
+    consume();
 }
 
 QString Parser::rest() { return m_input.mid(m_pos); }
