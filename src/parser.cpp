@@ -54,6 +54,11 @@ Node Parser::parse_element() {
     return Node();
   }
 
+  if (tag_name.startsWith("!")) {
+    skip_until(">");
+    return Node();
+  }
+
   if (tag_name == "script") {
     skip_until("</script>");
     return Node();
@@ -62,9 +67,6 @@ Node Parser::parse_element() {
   QMap<QString, QString> attrs = parse_attributes();
   assert(consume() == '>');
 
-  // skip DOCTYPE declarations
-  if (tag_name.startsWith("!"))
-    return Node();
   if (kVoidElements.contains(tag_name))
     return Node(tag_name, attrs, {});
 
@@ -83,13 +85,13 @@ QPair<QString, QString> Parser::parse_attribute() {
   consume_whitespace();
 
   // check if attribute has a value
-  if (peek() == '>') {
-    return {name, ""};
-  } else {
+  if (peek() == '=') {
     assert(consume() == '=');
     consume_whitespace();
     QString value = parse_attribute_value();
     return {name, value};
+  } else {
+    return {name, ""};
   }
 }
 
