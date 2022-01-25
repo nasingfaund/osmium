@@ -53,7 +53,7 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
   scroll_area->setWidgetResizable(true);
   scroll_area->setWidget(page_widget);
 
-  m_page_layout = new QVBoxLayout();
+  m_page_layout = new QGridLayout();
   m_page_layout->setAlignment(Qt::AlignTop);
   page_widget->setLayout(m_page_layout);
   layout->addWidget(scroll_area);
@@ -112,13 +112,18 @@ void MainWindow::handle_reply(QNetworkReply* reply) {
   m_urlbar->setText(m_current_url);
 
   clear_page();
+  m_x = 0;
+  m_y = 0;
   render(root, Node());
 }
 
 void MainWindow::render(Node n, Node parent) {
   if (n.type() == NodeType::Element) {
+    if (kNewLineBefore.contains(n.text()))
+      new_line();
+
     if (n.text() == "br") {
-      m_page_layout->addWidget(new QLabel());
+      new_line();
     } else if (n.text() == "img") {
       QString url = make_absolute(m_current_url, n.attrs()["src"]);
 
@@ -142,11 +147,14 @@ void MainWindow::render(Node n, Node parent) {
       img.loadFromData(bytes);
       QLabel* label = new QLabel();
       label->setPixmap(QPixmap::fromImage(img));
-      m_page_layout->addWidget(label);
+      append(label);
     }
 
     for (auto c : n.children())
       render(c, n);
+
+    if (kNewLineAfter.contains(n.text()))
+      new_line();
   } else if (n.type() == NodeType::TextNode) {
     if (kRenderBlacklist.contains(parent.text()))
       return;
@@ -191,13 +199,24 @@ void MainWindow::render(Node n, Node parent) {
                         label));
     } else if (parent.text() == "title") {
       setWindowTitle(n.text() + " - Osmium");
+      return;
     }
 
     label->setFont(font);
-    m_page_layout->addWidget(label);
+    append(label);
   } else {
     assert(false);
   }
+}
+
+void MainWindow::append(QWidget* d) {
+  m_page_layout->addWidget(d, m_x, m_y, Qt::AlignLeft);
+  m_y++;
+}
+
+void MainWindow::new_line() {
+  m_x++;
+  m_y = 0;
 }
 
 // FIXME: move it somewhere
