@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QFont>
 #include <QLabel>
+#include <QPushButton>
 #include <QScrollArea>
 
 #include "parser.h"
@@ -11,12 +12,36 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
   QWidget* widget = new QWidget(this);
   QVBoxLayout* layout = new QVBoxLayout();
 
+  QHBoxLayout* bar_layout = new QHBoxLayout();
+
+  QPushButton* back_button = new QPushButton("←");
+  back_button->setFont(QFont("Fira Code", 20));
+  back_button->setMaximumWidth(40);
+  back_button->setMaximumHeight(40);
+  connect(back_button, &QPushButton::clicked, this, [=]() {
+    if (m_history.size() < 2)
+      return;
+    m_history.pop_back();
+    navigate(m_history.back());
+    m_history.pop_back();
+  });
+  bar_layout->addWidget(back_button);
+
+  QPushButton* refresh_button = new QPushButton("↻");
+  refresh_button->setFont(QFont("Fira Code", 20));
+  refresh_button->setMaximumWidth(40);
+  refresh_button->setMaximumHeight(40);
+  connect(refresh_button, &QPushButton::clicked, this,
+          [=]() { navigate(m_current_url); });
+  bar_layout->addWidget(refresh_button);
+
   m_urlbar = new QLineEdit();
+  m_urlbar->setMinimumHeight(40);
   connect(m_urlbar, &QLineEdit::returnPressed, this,
           [=]() { navigate(m_urlbar->text()); });
-  layout->addWidget(m_urlbar);
+  bar_layout->addWidget(m_urlbar);
 
-  // TODO: add back and refresh button
+  layout->addLayout(bar_layout);
 
   QWidget* page_widget = new QWidget();
   QScrollArea* scroll_area = new QScrollArea();
@@ -50,8 +75,7 @@ void MainWindow::navigate(QString url) {
 }
 
 void MainWindow::handle_reply(QNetworkReply* reply) {
-  if (reply->error()) {
-    // TODO: display in status bar
+  if (reply->error() && reply->error() != 203 && reply->error() != 401) {
     qWarning() << "Error:" << reply->errorString();
     return;
   }
@@ -67,8 +91,10 @@ void MainWindow::handle_reply(QNetworkReply* reply) {
   Node root = parse(body);
 
   m_current_url = reply->url().toString();
+  m_history.push_back(m_current_url);
   setWindowTitle(m_current_url + " - Osmium");
   m_urlbar->setText(m_current_url);
+
   clear_page();
   render(root, Node());
 }
