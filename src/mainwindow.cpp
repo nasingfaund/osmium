@@ -5,7 +5,9 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QScrollArea>
+#include <QShortcut>
 
+#include "dominspector.h"
 #include "parser.h"
 
 MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
@@ -54,6 +56,15 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
   page_widget->setLayout(m_page_layout);
   layout->addWidget(scroll_area);
 
+  QShortcut* f5 = new QShortcut(Qt::Key_F5, this);
+  connect(f5, &QShortcut::activated, this, [&]() { navigate(m_current_url); });
+
+  QShortcut* f12 = new QShortcut(Qt::Key_F12, this);
+  connect(f12, &QShortcut::activated, this, [&]() {
+    DOMInspector* inspector = new DOMInspector(m_current_root);
+    inspector->show();
+  });
+
   widget->setLayout(layout);
   setGeometry(200, 100, 800, 600);
   setCentralWidget(widget);
@@ -92,6 +103,8 @@ void MainWindow::handle_reply(QNetworkReply* reply) {
   Node root = parse(body);
 
   m_current_url = reply->url().toString();
+  m_current_root = root;
+
   m_history.push_back(m_current_url);
   setWindowTitle(m_current_url + " - Osmium");
   m_urlbar->setText(m_current_url);

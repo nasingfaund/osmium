@@ -19,6 +19,7 @@ class MainWindow : public QMainWindow {
   QVBoxLayout* m_page_layout;
   QLineEdit* m_urlbar;
   QString m_current_url;
+  Node m_current_root;
   QVector<QString> m_history;
 
   void navigate(QString url);
