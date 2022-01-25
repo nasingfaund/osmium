@@ -75,6 +75,7 @@ void MainWindow::navigate(QString url) {
 }
 
 void MainWindow::handle_reply(QNetworkReply* reply) {
+  // https://doc.qt.io/qt-5/qnetworkreply.html#NetworkError-enum
   if (reply->error() && reply->error() != 203 && reply->error() != 401) {
     qWarning() << "Error:" << reply->errorString();
     return;
@@ -83,7 +84,7 @@ void MainWindow::handle_reply(QNetworkReply* reply) {
   int status_code =
       reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
   if (300 < status_code && status_code < 400) {
-    navigate(reply->rawHeader("Location"));
+    navigate(make_absolute(m_current_url, reply->rawHeader("Location")));
     return;
   }
 
