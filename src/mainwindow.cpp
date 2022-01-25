@@ -14,6 +14,7 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
   QWidget* widget = new QWidget(this);
   QVBoxLayout* layout = new QVBoxLayout();
 
+  // bar layout
   QHBoxLayout* bar_layout = new QHBoxLayout();
 
   QPushButton* back_button = new QPushButton("←");
@@ -45,6 +46,7 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
 
   layout->addLayout(bar_layout);
 
+  // page layout
   QWidget* page_widget = new QWidget();
   QScrollArea* scroll_area = new QScrollArea();
   scroll_area->setFrameShape(QFrame::NoFrame);
@@ -56,6 +58,7 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
   page_widget->setLayout(m_page_layout);
   layout->addWidget(scroll_area);
 
+  // shortcuts
   QShortcut* f5 = new QShortcut(Qt::Key_F5, this);
   connect(f5, &QShortcut::activated, this, [&]() { navigate(m_current_url); });
 
@@ -68,7 +71,6 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
   widget->setLayout(layout);
   setGeometry(200, 100, 800, 600);
   setCentralWidget(widget);
-
   navigate(argv[1]);
 }
 

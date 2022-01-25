@@ -10,6 +10,7 @@ DOMInspector::DOMInspector(Node root, QWidget *parent) : QWidget(parent) {
 
   QVBoxLayout *layout = new QVBoxLayout();
   layout->addWidget(tree);
+  setWindowTitle("DOM Inspector");
   setLayout(layout);
 }
 

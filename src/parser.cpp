@@ -96,15 +96,16 @@ QPair<QString, QString> Parser::parse_attribute() {
 }
 
 QString Parser::parse_attribute_value() {
-  QChar quote = consume();
+  QChar quote = peek();
   QString value;
 
   if (quote == '"' || quote == '\'') {
+    assert(consume() == quote);
     while (peek() != quote)
       value.push_back(consume());
     assert(consume() == quote);
   } else {
-    while (!is_alphanumeric(peek()))
+    while (peek() != '>' && !peek().isSpace())
       value.push_back(consume());
   }
 
@@ -161,5 +162,6 @@ QChar Parser::peek() {
 bool Parser::eof() { return m_pos >= m_input.length(); }
 
 bool Parser::is_alphanumeric(QChar c) {
-  return c.isDigit() || c.isLetter() || c == '!' || c == ':' || c == '-';
+  return c.isDigit() || c.isLetter() || c == '!' || c == ':' || c == '-' ||
+         c == '_';
 }
