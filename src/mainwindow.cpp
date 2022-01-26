@@ -47,6 +47,9 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
 
   layout->addLayout(bar_layout);
 
+  // status bar
+  // TODO
+
   // page layout
   QWidget* page_widget = new QWidget();
   QScrollArea* scroll_area = new QScrollArea();
@@ -149,7 +152,9 @@ void MainWindow::render(Node n, Node parent) {
     if (kRenderBlacklist.contains(parent.text()))
       return;
 
-    QString content = n.text().replace("\n", "").trimmed();
+    QRegularExpression ws_regex("\\s+");
+    QString content =
+        n.text().replace(ws_regex, " ").trimmed().replace("&nbsp;", " ");
 
     ClickableLabel* label = new ClickableLabel();
     label->setTextFormat(Qt::PlainText);
@@ -202,13 +207,17 @@ void MainWindow::render(Node n, Node parent) {
 void MainWindow::append(QWidget* d) { m_line->addWidget(d, 0, Qt::AlignLeft); }
 
 void MainWindow::new_line() {
-  m_page_layout->addLayout(m_line);
+  if (m_line != nullptr) {
+    m_line->addWidget(new QLabel(""));
+    m_page_layout->addLayout(m_line);
+  }
+
   m_line = new QHBoxLayout();
   m_line->setAlignment(Qt::AlignLeft);
 }
 
 void MainWindow::clear_page(QLayout* layout) {
-  if ((layout == nullptr) || (layout->isEmpty()))
+  if ((layout == nullptr) || layout->isEmpty())
     return;
 
   QLayoutItem* item;
