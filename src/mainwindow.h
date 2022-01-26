@@ -23,6 +23,7 @@ class MainWindow : public QMainWindow {
   QVBoxLayout* m_page_layout;
   QHBoxLayout* m_line;
   QLineEdit* m_urlbar;
+
   QString m_current_url;
   Node m_current_root;
   QVector<QString> m_history;
@@ -32,7 +33,6 @@ class MainWindow : public QMainWindow {
   void render(Node n, Node parent);
   void append(QWidget* d);
   void new_line();
-  QString make_absolute(QString current_url, QString url);
   void clear_page(QLayout* layout);
 };
 

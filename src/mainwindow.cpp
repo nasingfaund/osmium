@@ -8,6 +8,7 @@
 #include <QShortcut>
 
 #include "dominspector.h"
+#include "net.h"
 #include "parser.h"
 
 MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
@@ -124,29 +125,18 @@ void MainWindow::render(Node n, Node parent) {
 
     if (n.text() == "br") {
       new_line();
+    } else if (n.text() == "li") {
+      append(new QLabel("•"));
     } else if (n.text() == "img") {
       QString url = make_absolute(m_current_url, n.attrs()["src"]);
-
-      QNetworkAccessManager manager;
-      QNetworkRequest req = QNetworkRequest(QUrl(url));
-
-      QNetworkReply* reply = manager.get(req);
-      QEventLoop loop;
-      connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-      loop.exec();
-
-      int status_code =
-          reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-      if (status_code != 200) {
-        qWarning() << "Failed to download" << url;
+      QPair<bool, QImage> pair = load_image_from_url(url);
+      if (!pair.first) {
+        qWarning() << "Couldn't load" << url;
         return;
       }
 
-      QByteArray bytes = reply->readAll();
-      QImage img;
-      img.loadFromData(bytes);
       QLabel* label = new QLabel();
-      label->setPixmap(QPixmap::fromImage(img));
+      label->setPixmap(QPixmap::fromImage(pair.second));
       append(label);
     }
 
@@ -166,7 +156,7 @@ void MainWindow::render(Node n, Node parent) {
     label->setText(content);
 
     QFont font = label->font();
-    font.setPointSize(16);
+    font.setPointSize(14);
     font.setFamily("Fira Sans");
 
     if (parent.text() == "h1") {
@@ -215,14 +205,6 @@ void MainWindow::new_line() {
   m_page_layout->addLayout(m_line);
   m_line = new QHBoxLayout();
   m_line->setAlignment(Qt::AlignLeft);
-}
-
-// FIXME: move it somewhere
-QString MainWindow::make_absolute(QString current_url, QString url) {
-  if (url.contains("://"))
-    return url;
-
-  return QUrl(current_url).resolved(QUrl(url)).toString();
 }
 
 void MainWindow::clear_page(QLayout* layout) {
