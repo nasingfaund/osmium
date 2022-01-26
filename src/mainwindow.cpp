@@ -53,7 +53,7 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
   scroll_area->setWidgetResizable(true);
   scroll_area->setWidget(page_widget);
 
-  m_page_layout = new QGridLayout();
+  m_page_layout = new QVBoxLayout();
   m_page_layout->setAlignment(Qt::AlignTop);
   page_widget->setLayout(m_page_layout);
   layout->addWidget(scroll_area);
@@ -111,10 +111,10 @@ void MainWindow::handle_reply(QNetworkReply* reply) {
   setWindowTitle(m_current_url + " - Osmium");
   m_urlbar->setText(m_current_url);
 
-  clear_page();
-  m_x = 0;
-  m_y = 0;
+  clear_page(m_page_layout);
+  new_line();
   render(root, Node());
+  new_line();
 }
 
 void MainWindow::render(Node n, Node parent) {
@@ -159,7 +159,7 @@ void MainWindow::render(Node n, Node parent) {
     if (kRenderBlacklist.contains(parent.text()))
       return;
 
-    QString content = n.text().replace("\n", "");
+    QString content = n.text().replace("\n", "").trimmed();
 
     ClickableLabel* label = new ClickableLabel();
     label->setTextFormat(Qt::PlainText);
@@ -209,14 +209,12 @@ void MainWindow::render(Node n, Node parent) {
   }
 }
 
-void MainWindow::append(QWidget* d) {
-  m_page_layout->addWidget(d, m_x, m_y, Qt::AlignLeft);
-  m_y++;
-}
+void MainWindow::append(QWidget* d) { m_line->addWidget(d, 0, Qt::AlignLeft); }
 
 void MainWindow::new_line() {
-  m_x++;
-  m_y = 0;
+  m_page_layout->addLayout(m_line);
+  m_line = new QHBoxLayout();
+  m_line->setAlignment(Qt::AlignLeft);
 }
 
 // FIXME: move it somewhere
@@ -227,12 +225,17 @@ QString MainWindow::make_absolute(QString current_url, QString url) {
   return QUrl(current_url).resolved(QUrl(url)).toString();
 }
 
-void MainWindow::clear_page() {
-  while (true) {
-    QLayoutItem* item = m_page_layout->layout()->takeAt(0);
-    if (item == NULL)
-      break;
-    delete item->widget();
-    delete item;
+void MainWindow::clear_page(QLayout* layout) {
+  if ((layout == nullptr) || (layout->isEmpty()))
+    return;
+
+  QLayoutItem* item;
+  while ((item = layout->itemAt(0))) {
+    if (item->layout()) {
+      clear_page(item->layout());
+      delete item->layout();
+    } else if (item->widget()) {
+      delete item->widget();
+    }
   }
 }

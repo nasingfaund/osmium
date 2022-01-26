@@ -20,13 +20,12 @@ class MainWindow : public QMainWindow {
   const QVector<QString> kNewLineAfter = {"h1",  "h2", "h3", "h4", "h5", "h6",
                                           "big", "ul", "li", "p",  "tr", "div"};
 
-  QGridLayout* m_page_layout;
+  QVBoxLayout* m_page_layout;
+  QHBoxLayout* m_line;
   QLineEdit* m_urlbar;
   QString m_current_url;
   Node m_current_root;
   QVector<QString> m_history;
-
-  int m_x = 0, m_y = 0;
 
   void navigate(QString url);
   void handle_reply(QNetworkReply* reply);
@@ -34,7 +33,7 @@ class MainWindow : public QMainWindow {
   void append(QWidget* d);
   void new_line();
   QString make_absolute(QString current_url, QString url);
-  void clear_page();
+  void clear_page(QLayout* layout);
 };
 
 class ClickableLabel : public QLabel {
