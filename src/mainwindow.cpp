@@ -93,7 +93,8 @@ void MainWindow::navigate(QString url) {
 
 void MainWindow::handle_reply(QNetworkReply* reply) {
   // https://doc.qt.io/qt-5/qnetworkreply.html#NetworkError-enum
-  if (reply->error() && reply->error() != 203 && reply->error() != 401) {
+  if (reply->error() && reply->error() != 201 && reply->error() != 203 &&
+      reply->error() != 401) {
     qWarning() << "Error:" << reply->errorString();
     return;
   }
@@ -106,15 +107,20 @@ void MainWindow::handle_reply(QNetworkReply* reply) {
   }
 
   QString body = QString(reply->readAll());
-  Node root = parse(body);
 
   m_current_url = reply->url().toString();
-  m_current_root = root;
 
   m_history.push_back(m_current_url);
   setWindowTitle(m_current_url + " - Osmium");
   m_urlbar->setText(m_current_url);
 
+  Node root(body);
+  if (!reply->hasRawHeader("Content-Type") ||
+      reply->rawHeader("Content-Type") == "text/html") {
+    root = parse(body);
+  }
+
+  m_current_root = root;
   clear_page(m_page_layout);
   new_line();
   render(root, Node());
@@ -161,7 +167,7 @@ void MainWindow::render(Node n, Node parent) {
     label->setText(content);
 
     QFont font = label->font();
-    font.setPointSize(14);
+    font.setPointSize(11);
     font.setFamily("Fira Sans");
 
     if (parent.text() == "h1") {
@@ -183,7 +189,7 @@ void MainWindow::render(Node n, Node parent) {
       font.setStrikeOut(true);
     } else if (parent.text() == "a" && parent.attrs().contains("href")) {
       QPalette palette = label->palette();
-      palette.setColor(QPalette::WindowText, Qt::blue);
+      palette.setColor(QPalette::WindowText, QColor(0, 0, 238));
       label->setPalette(palette);
 
       QString href = parent.attrs().value("href");
