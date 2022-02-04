@@ -12,6 +12,13 @@ void Parser::skip_until(QString s) {
     consume();
 }
 
+QString Parser::consume_until(QString s) {
+  QString o;
+  while (!eof() && !rest().startsWith(s))
+    o += consume();
+  return o;
+}
+
 QString Parser::rest() { return m_input.mid(m_pos); }
 
 QChar Parser::consume() {
@@ -41,6 +48,5 @@ QChar Parser::peek() {
 bool Parser::eof() { return m_pos >= m_input.length(); }
 
 bool Parser::is_alphanumeric(QChar c) {
-  return c.isDigit() || c.isLetter() || c == '!' || c == ':' || c == '-' ||
-         c == '_';
+  return c.isDigit() || c.isLetter() || c == '!' || c == '-' || c == '_';
 }

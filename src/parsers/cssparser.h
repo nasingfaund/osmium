@@ -9,4 +9,5 @@ class CSSParser : public Parser {
 
  public:
   QMap<QString, QString> parse_definitions();
+  QPair<QString, QString> parse_definition();
 };

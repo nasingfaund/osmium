@@ -13,6 +13,7 @@ class Parser {
   QString consume_alphanumeric();
   QString rest();
   void skip_until(QString s);
+  QString consume_until(QString s);
   QChar consume();
   QChar peek();
   bool is_alphanumeric(QChar c);
