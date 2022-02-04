@@ -117,7 +117,7 @@ void MainWindow::handle_reply(QNetworkReply* reply) {
 
   Node root(body);
   if (!reply->hasRawHeader("Content-Type") ||
-      reply->rawHeader("Content-Type") == "text/html") {
+      reply->rawHeader("Content-Type").startsWith("text/html")) {
     root = parse(body);
   }
 

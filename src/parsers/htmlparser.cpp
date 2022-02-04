@@ -69,7 +69,10 @@ Node HTMLParser::parse_element() {
 
   assert(consume() == '<');
   assert(consume() == '/');
-  consume_alphanumeric();
+  QString ending_tag_name = consume_alphanumeric();
+  if (ending_tag_name != tag_name)
+    qDebug() << "ending tag name is" << ending_tag_name << "should be"
+             << tag_name;
   assert(consume() == '>');
 
   return Node(tag_name, attrs, children);
