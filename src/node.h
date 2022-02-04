@@ -26,10 +26,13 @@ class Node {
   QMap<QString, QString> attrs() { return m_attrs; }
   QVector<Node> children() { return m_children; }
   QString text() { return m_text; }
+  QMap<QString, QString> style() { return m_style; }
+  void set_style(QMap<QString, QString> s) { m_style = s; }
 
  private:
   NodeType m_type;
   QMap<QString, QString> m_attrs;
   QVector<Node> m_children;
   QString m_text;
+  QMap<QString, QString> m_style;
 };

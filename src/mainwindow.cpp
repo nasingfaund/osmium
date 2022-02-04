@@ -9,6 +9,7 @@
 
 #include "dominspector.h"
 #include "net.h"
+#include "parsers/cssparser.h"
 #include "parsers/htmlparser.h"
 
 MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
@@ -128,6 +129,9 @@ void MainWindow::handle_reply(QNetworkReply* reply) {
 }
 
 void MainWindow::render(Node n, Node parent) {
+  if (n.attrs().count("style"))
+    n.set_style(CSSParser(n.attrs()["style"]).parse_definitions());
+
   if (n.type() == NodeType::Element) {
     if (kNewLineBefore.contains(n.text()))
       new_line();
@@ -201,6 +205,12 @@ void MainWindow::render(Node n, Node parent) {
     } else if (parent.text() == "title") {
       setWindowTitle(n.text() + " - Osmium");
       return;
+    }
+
+    if (parent.style().count("color")) {
+      QPalette palette = label->palette();
+      palette.setColor(QPalette::WindowText, QColor(parent.style()["color"]));
+      label->setPalette(palette);
     }
 
     label->setFont(font);
