@@ -41,7 +41,7 @@ Node HTMLParser::parse_textnode() {
 }
 
 Node HTMLParser::parse_element() {
-  assert(consume() == '<');
+  PARSER_ASSERT(consume() == '<');
   QString tag_name = consume_alphanumeric();
 
   if (tag_name == "!--") {
@@ -60,20 +60,22 @@ Node HTMLParser::parse_element() {
   }
 
   QMap<QString, QString> attrs = parse_attributes();
-  assert(consume() == '>');
+  PARSER_ASSERT(consume() == '>');
 
   if (kVoidElements.contains(tag_name))
     return Node(tag_name, attrs, {});
 
   QVector<Node> children = parse_nodes();
 
-  assert(consume() == '<');
-  assert(consume() == '/');
-  QString ending_tag_name = consume_alphanumeric();
-  if (ending_tag_name != tag_name)
-    qDebug() << "ending tag name is" << ending_tag_name << "should be"
-             << tag_name;
-  assert(consume() == '>');
+  if (!eof()) {
+    PARSER_ASSERT(consume() == '<');
+    PARSER_ASSERT(consume() == '/');
+    QString ending_tag_name = consume_alphanumeric();
+    if (ending_tag_name != tag_name)
+      qDebug() << "ending tag name is" << ending_tag_name << "should be"
+               << tag_name;
+    PARSER_ASSERT(consume() == '>');
+  }
 
   return Node(tag_name, attrs, children);
 }
@@ -84,7 +86,7 @@ QPair<QString, QString> HTMLParser::parse_attribute() {
 
   // check if attribute has a value
   if (peek() == '=') {
-    assert(consume() == '=');
+    PARSER_ASSERT(consume() == '=');
     consume_whitespace();
     QString value = parse_attribute_value();
     return {name, value};
@@ -98,10 +100,10 @@ QString HTMLParser::parse_attribute_value() {
   QString value;
 
   if (quote == '"' || quote == '\'') {
-    assert(consume() == quote);
+    PARSER_ASSERT(consume() == quote);
     while (peek() != quote)
       value.push_back(consume());
-    assert(consume() == quote);
+    PARSER_ASSERT(consume() == quote);
   } else {
     while (peek() != '>' && !peek().isSpace())
       value.push_back(consume());

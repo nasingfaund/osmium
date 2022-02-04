@@ -6,6 +6,10 @@ QMap<QString, QString> CSSParser::parse_definitions() {
     consume_whitespace();
     if (eof())
       break;
+    if (peek() == ';') {
+      consume();
+      continue;
+    }
     QPair<QString, QString> def = parse_definition();
     defs[def.first] = def.second;
   }
@@ -15,7 +19,7 @@ QMap<QString, QString> CSSParser::parse_definitions() {
 
 QPair<QString, QString> CSSParser::parse_definition() {
   QString name = consume_alphanumeric();
-  assert(consume() == ':');
+  PARSER_ASSERT(consume() == ':');
   consume_whitespace();
 
   QString value = consume_until(";");

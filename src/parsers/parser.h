@@ -1,5 +1,15 @@
 #pragma once
+#include <QDebug>
 #include <QString>
+
+#define PARSER_ASSERT_MSG(x, msg)                                             \
+  if (!static_cast<bool>(x)) {                                                \
+    qCritical() << "ASSERTION FAILED in" << __FILE__ << "in line" << __LINE__ \
+                << msg;                                                       \
+    qCritical() << m_input.mid(m_pos - 5, 10);                                \
+    exit(1);                                                                  \
+  }
+#define PARSER_ASSERT(x) PARSER_ASSERT_MSG(x, "")
 
 class Parser {
  public:
