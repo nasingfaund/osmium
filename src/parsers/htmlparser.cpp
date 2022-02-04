@@ -1,7 +1,7 @@
-#include "parser.h"
+#include "htmlparser.h"
 
 Node parse(QString input) {
-  QVector<Node> nodes = Parser(input).parse_nodes();
+  QVector<Node> nodes = HTMLParser(input).parse_nodes();
 
   if (nodes.size() == 1)
     return nodes[0];
@@ -9,12 +9,7 @@ Node parse(QString input) {
     return Node("html", {}, nodes);
 }
 
-Parser::Parser(QString input) {
-  m_input = input;
-  m_pos = 0;
-}
-
-QVector<Node> Parser::parse_nodes() {
+QVector<Node> HTMLParser::parse_nodes() {
   QVector<Node> nodes;
 
   while (true) {
@@ -29,7 +24,7 @@ QVector<Node> Parser::parse_nodes() {
   return nodes;
 }
 
-Node Parser::parse_node() {
+Node HTMLParser::parse_node() {
   switch (peek().toLatin1()) {
     case '<':
       return parse_element();
@@ -38,14 +33,14 @@ Node Parser::parse_node() {
   }
 }
 
-Node Parser::parse_textnode() {
+Node HTMLParser::parse_textnode() {
   QString content;
   while (peek() != '<')
     content.push_back(consume());
   return Node(content);
 }
 
-Node Parser::parse_element() {
+Node HTMLParser::parse_element() {
   assert(consume() == '<');
   QString tag_name = consume_alphanumeric();
 
@@ -80,7 +75,7 @@ Node Parser::parse_element() {
   return Node(tag_name, attrs, children);
 }
 
-QPair<QString, QString> Parser::parse_attribute() {
+QPair<QString, QString> HTMLParser::parse_attribute() {
   QString name = consume_alphanumeric();
   consume_whitespace();
 
@@ -95,7 +90,7 @@ QPair<QString, QString> Parser::parse_attribute() {
   }
 }
 
-QString Parser::parse_attribute_value() {
+QString HTMLParser::parse_attribute_value() {
   QChar quote = peek();
   QString value;
 
@@ -112,7 +107,7 @@ QString Parser::parse_attribute_value() {
   return value;
 }
 
-QMap<QString, QString> Parser::parse_attributes() {
+QMap<QString, QString> HTMLParser::parse_attributes() {
   QMap<QString, QString> attributes;
   while (true) {
     consume_whitespace();
@@ -124,44 +119,4 @@ QMap<QString, QString> Parser::parse_attributes() {
     attributes[pair.first] = pair.second;
   }
   return attributes;
-}
-
-void Parser::skip_until(QString s) {
-  while (!rest().startsWith(s))
-    consume();
-  for (int i = 0; i < s.length(); i++)
-    consume();
-}
-
-QString Parser::rest() { return m_input.mid(m_pos); }
-
-QChar Parser::consume() {
-  QChar c = peek();
-  m_pos++;
-  return c;
-}
-
-void Parser::consume_whitespace() {
-  while (peek().isSpace())
-    consume();
-}
-
-QString Parser::consume_alphanumeric() {
-  QString out;
-  while (is_alphanumeric(peek()))
-    out.push_back(consume());
-  return out;
-}
-
-QChar Parser::peek() {
-  if (eof())
-    return 0;
-  return m_input[m_pos];
-}
-
-bool Parser::eof() { return m_pos >= m_input.length(); }
-
-bool Parser::is_alphanumeric(QChar c) {
-  return c.isDigit() || c.isLetter() || c == '!' || c == ':' || c == '-' ||
-         c == '_';
 }

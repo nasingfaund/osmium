@@ -9,7 +9,7 @@
 
 #include "dominspector.h"
 #include "net.h"
-#include "parser.h"
+#include "parsers/htmlparser.h"
 
 MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
   QWidget* widget = new QWidget(this);
