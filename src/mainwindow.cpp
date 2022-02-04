@@ -207,12 +207,40 @@ void MainWindow::render(Node n, Node parent) {
       return;
     }
 
-    if (parent.style().count("color")) {
-      QPalette palette = label->palette();
+    // style rendering
+    QPalette palette = label->palette();
+
+    if (parent.style().count("color"))
       palette.setColor(QPalette::WindowText, QColor(parent.style()["color"]));
-      label->setPalette(palette);
+
+    if (parent.style().count("background-color")) {
+      palette.setColor(label->backgroundRole(),
+                       QColor(parent.style()["background-color"]));
+      label->setAutoFillBackground(true);
     }
 
+    if (parent.style().count("font-family"))
+      font.setFamily(parent.style()["font-family"]);
+
+    if (parent.style().count("font-size")) {
+      QString size = parent.style()["font-size"];
+      if (size.endsWith("px")) {
+        size = size.left(size.length() - 2);
+        font.setPointSizeF(size.toFloat());
+      }
+    }
+
+    if (parent.style().count("text-align")) {
+      QString text_align = parent.style()["text-align"];
+      if (text_align == "left")
+        m_line->setAlignment(Qt::AlignLeft);
+      else if (text_align == "center")
+        m_line->setAlignment(Qt::AlignCenter);
+      else if (text_align == "right")
+        m_line->setAlignment(Qt::AlignRight);
+    }
+
+    label->setPalette(palette);
     label->setFont(font);
     append(label);
   } else {
