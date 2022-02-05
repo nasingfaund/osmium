@@ -42,7 +42,7 @@ Node HTMLParser::parse_textnode() {
 
 Node HTMLParser::parse_element() {
   PARSER_ASSERT(consume() == '<');
-  QString tag_name = consume_alphanumeric();
+  QString tag_name = consume_alphanumeric("!-:");
 
   if (tag_name == "!--") {
     skip_until("-->");
@@ -70,10 +70,10 @@ Node HTMLParser::parse_element() {
   if (!eof()) {
     PARSER_ASSERT(consume() == '<');
     PARSER_ASSERT(consume() == '/');
-    QString ending_tag_name = consume_alphanumeric();
+    QString ending_tag_name = consume_alphanumeric("!-:");
     if (ending_tag_name != tag_name)
-      qDebug() << "ending tag name is" << ending_tag_name << "should be"
-               << tag_name;
+      qWarning() << "ending tag name is" << ending_tag_name << "should be"
+                 << tag_name;
     PARSER_ASSERT(consume() == '>');
   }
 
@@ -81,7 +81,7 @@ Node HTMLParser::parse_element() {
 }
 
 QPair<QString, QString> HTMLParser::parse_attribute() {
-  QString name = consume_alphanumeric();
+  QString name = consume_alphanumeric("-:");
   consume_whitespace();
 
   // check if attribute has a value

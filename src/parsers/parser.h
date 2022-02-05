@@ -20,7 +20,7 @@ class Parser {
   int m_pos;
 
   void consume_whitespace();
-  QString consume_alphanumeric();
+  QString consume_alphanumeric(QString extra_chars = "!-_");
   QString rest();
   void skip_until(QString s);
   QString consume_until(QString s);

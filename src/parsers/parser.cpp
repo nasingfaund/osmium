@@ -32,9 +32,9 @@ void Parser::consume_whitespace() {
     consume();
 }
 
-QString Parser::consume_alphanumeric() {
+QString Parser::consume_alphanumeric(QString extra_chars) {
   QString out;
-  while (is_alphanumeric(peek()))
+  while (is_alphanumeric(peek()) || extra_chars.contains(peek()))
     out.push_back(consume());
   return out;
 }
@@ -47,6 +47,4 @@ QChar Parser::peek() {
 
 bool Parser::eof() { return m_pos >= m_input.length(); }
 
-bool Parser::is_alphanumeric(QChar c) {
-  return c.isDigit() || c.isLetter() || c == '!' || c == '-' || c == '_';
-}
+bool Parser::is_alphanumeric(QChar c) { return c.isDigit() || c.isLetter(); }
