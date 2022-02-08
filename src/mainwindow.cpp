@@ -81,12 +81,14 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
 }
 
 void MainWindow::navigate(QString url) {
+  if (url == "")
+    return;
   if (!url.contains("://"))
     url = "http://" + url;
   QNetworkAccessManager* manager = new QNetworkAccessManager();
 
-  QNetworkRequest request;
-  request.setUrl(url);
+  QNetworkRequest request(url);
+  request.setHeader(QNetworkRequest::UserAgentHeader, kUserAgent);
 
   m_statusbar->setText("Navigating to " + url + "...");
   manager->get(request);
@@ -98,7 +100,7 @@ void MainWindow::handle_reply(QNetworkReply* reply) {
   // https://doc.qt.io/qt-5/qnetworkreply.html#NetworkError-enum
   if (reply->error() && reply->error() != 201 && reply->error() != 203 &&
       reply->error() != 401) {
-    qWarning() << "Error:" << reply->errorString();
+    m_statusbar->setText("Network Error: " + reply->errorString());
     return;
   }
 

@@ -6,7 +6,7 @@
 #include <QUrl>
 #include <QtNetwork/QtNetwork>
 
-// TODO: handle about urls
+const QString kUserAgent = "Mozilla/5.0 (Unknown) Osmium";
 
 QString make_absolute(QString current_url, QString url) {
   if (url.contains("://"))
@@ -18,6 +18,7 @@ QString make_absolute(QString current_url, QString url) {
 QPair<bool, QImage> load_image_from_url(QString url) {
   QNetworkAccessManager manager;
   QNetworkRequest req = QNetworkRequest(QUrl(url));
+  req.setHeader(QNetworkRequest::UserAgentHeader, kUserAgent);
 
   QNetworkReply* reply = manager.get(req);
   QEventLoop loop;
