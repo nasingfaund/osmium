@@ -20,9 +20,10 @@ class MainWindow : public QMainWindow {
   const QVector<QString> kNewLineAfter = {"h1",  "h2", "h3", "h4", "h5", "h6",
                                           "big", "ul", "li", "p",  "tr", "div"};
 
+  QLineEdit* m_urlbar;
+  QLabel* m_statusbar;
   QVBoxLayout* m_page_layout;
   QHBoxLayout* m_line;
-  QLineEdit* m_urlbar;
 
   QString m_current_url;
   Node m_current_root;

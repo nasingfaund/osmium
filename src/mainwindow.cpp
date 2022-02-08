@@ -49,7 +49,8 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
   layout->addLayout(bar_layout);
 
   // status bar
-  // TODO
+  m_statusbar = new QLabel();
+  layout->addWidget(m_statusbar);
 
   // page layout
   QWidget* page_widget = new QWidget();
@@ -87,6 +88,7 @@ void MainWindow::navigate(QString url) {
   QNetworkRequest request;
   request.setUrl(url);
 
+  m_statusbar->setText("Navigating to " + url + "...");
   manager->get(request);
   connect(manager, &QNetworkAccessManager::finished, this,
           &MainWindow::handle_reply);
@@ -99,6 +101,8 @@ void MainWindow::handle_reply(QNetworkReply* reply) {
     qWarning() << "Error:" << reply->errorString();
     return;
   }
+
+  qint64 start_time = QDateTime::currentMSecsSinceEpoch();
 
   int status_code =
       reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -115,6 +119,7 @@ void MainWindow::handle_reply(QNetworkReply* reply) {
   setWindowTitle(m_current_url + " - Osmium");
   m_urlbar->setText(m_current_url);
 
+  m_statusbar->setText(QString("Parsing %1 bytes...").arg(body.length()));
   Node root(body);
   if (!reply->hasRawHeader("Content-Type") ||
       reply->rawHeader("Content-Type").startsWith("text/html")) {
@@ -124,8 +129,13 @@ void MainWindow::handle_reply(QNetworkReply* reply) {
   m_current_root = root;
   clear_page(m_page_layout);
   new_line();
+  m_statusbar->setText(
+      QString("Rendering %1 nodes...").arg(m_current_root.count()));
   render(root, Node());
   new_line();
+
+  qint64 total_time = QDateTime::currentMSecsSinceEpoch() - start_time;
+  m_statusbar->setText(QString("Done in %1ms!").arg(total_time));
 }
 
 void MainWindow::render(Node n, Node parent) {

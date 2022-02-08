@@ -28,6 +28,12 @@ class Node {
   QString text() { return m_text; }
   QMap<QString, QString> style() { return m_style; }
   void set_style(QMap<QString, QString> s) { m_style = s; }
+  size_t count() {
+    int c = 1;
+    for (auto e : m_children)
+      c += e.count();
+    return c;
+  }
 
  private:
   NodeType m_type;
