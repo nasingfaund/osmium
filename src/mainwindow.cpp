@@ -49,7 +49,7 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
   layout->addLayout(bar_layout);
 
   // status bar
-  m_statusbar = new QLabel();
+  m_statusbar = new QLabel(); // TODO: replace with QStatusBar :P
   layout->addWidget(m_statusbar);
 
   // page layout
@@ -75,6 +75,7 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
   });
 
   widget->setLayout(layout);
+  setWindowTitle("Osmium");
   setGeometry(200, 100, 800, 600);
   setCentralWidget(widget);
   navigate(argv[1]);

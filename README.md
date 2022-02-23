@@ -4,6 +4,7 @@ Web browser written from scratch in C++
 
 ## Build
 ```bash
-qmake osmium.pro
+mkdir build && cd build
+qmake ..
 make
 ```
