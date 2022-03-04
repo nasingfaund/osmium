@@ -25,11 +25,16 @@ class MainWindow : public QMainWindow {
   QLineEdit* m_urlbar;
   QLabel* m_statusbar;
   QVBoxLayout* m_page_layout;
-  QHBoxLayout* m_line;
+  QHBoxLayout* m_line = nullptr;
 
   QString m_current_url;
   Node m_current_root;
   QVector<QString> m_history;
+  // TODO: QNetworkCookieJar does not implement permanent storage: it only keeps
+  //       the cookies in memory. Once the QNetworkCookieJar object is deleted,
+  //       all cookies it held will be discarded as well.
+  //       https://doc.qt.io/qt-5/qnetworkcookiejar.html#details
+  QNetworkCookieJar* m_jar;
 
   void setup_menubar();
   void navigate(QString url);

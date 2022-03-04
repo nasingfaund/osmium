@@ -80,6 +80,8 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
   setWindowTitle("Osmium");
   setGeometry(200, 100, 800, 600);
   setCentralWidget(widget);
+
+  m_jar = new QNetworkCookieJar();
   navigate(argv[1]);
 }
 
@@ -107,6 +109,7 @@ void MainWindow::navigate(QString url) {
   if (!url.contains("://"))
     url = "http://" + url;
   QNetworkAccessManager* manager = new QNetworkAccessManager();
+  manager->setCookieJar(m_jar);
 
   QNetworkRequest request(url);
   request.setHeader(QNetworkRequest::UserAgentHeader, kUserAgent);
@@ -148,6 +151,7 @@ void MainWindow::handle_reply(QNetworkReply* reply) {
       reply->rawHeader("Content-Type").startsWith("text/html")) {
     root = parse(body);
   }
+  reply->deleteLater();
 
   m_current_root = root;
   clear_page(m_page_layout);
