@@ -16,7 +16,9 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
   QWidget* widget = new QWidget(this);
   QVBoxLayout* layout = new QVBoxLayout();
 
-  // bar layout
+  setup_menubar();
+
+  // urlbar
   QHBoxLayout* bar_layout = new QHBoxLayout();
 
   QPushButton* back_button = new QPushButton("←");
@@ -48,8 +50,8 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
 
   layout->addLayout(bar_layout);
 
-  // status bar
-  m_statusbar = new QLabel(); // TODO: replace with QStatusBar :P
+  // statusbar
+  m_statusbar = new QLabel();
   layout->addWidget(m_statusbar);
 
   // page layout
@@ -79,6 +81,24 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
   setGeometry(200, 100, 800, 600);
   setCentralWidget(widget);
   navigate(argv[1]);
+}
+
+void MainWindow::setup_menubar() {
+  QMenuBar* menubar = new QMenuBar();
+  QMenu* osmium_menu = new QMenu("Osmium");
+  QMenu* settings_menu = new QMenu("Settings");
+
+  QAction* exit_action = new QAction("Exit");
+  connect(exit_action, &QAction::triggered, this, QApplication::quit);
+  osmium_menu->addAction(exit_action);
+
+  QAction* cookie_checkbox = new QAction("Send cookies");
+  cookie_checkbox->setCheckable(true);
+  settings_menu->addAction(cookie_checkbox);
+
+  menubar->addMenu(osmium_menu);
+  menubar->addMenu(settings_menu);
+  setMenuBar(menubar);
 }
 
 void MainWindow::navigate(QString url) {

@@ -1,7 +1,9 @@
 #pragma once
+#include <QApplication>
 #include <QLabel>
 #include <QLineEdit>
 #include <QMainWindow>
+#include <QMenuBar>
 #include <QVBoxLayout>
 #include <QtNetwork/QtNetwork>
 
@@ -29,6 +31,7 @@ class MainWindow : public QMainWindow {
   Node m_current_root;
   QVector<QString> m_history;
 
+  void setup_menubar();
   void navigate(QString url);
   void handle_reply(QNetworkReply* reply);
   void render(Node n, Node parent);
