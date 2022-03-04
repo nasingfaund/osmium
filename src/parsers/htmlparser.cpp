@@ -35,7 +35,7 @@ Node HTMLParser::parse_node() {
 
 Node HTMLParser::parse_textnode() {
   QString content;
-  while (peek() != '<')
+  while (!eof() && peek() != '<')
     content.push_back(consume());
   return Node(content);
 }
