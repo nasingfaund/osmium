@@ -26,6 +26,7 @@ class MainWindow : public QMainWindow {
   QLabel* m_statusbar;
   QVBoxLayout* m_page_layout;
   QHBoxLayout* m_line = nullptr;
+  QAction* m_cookie_checkbox;
 
   QString m_current_url;
   Node m_current_root;

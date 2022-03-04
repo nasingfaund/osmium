@@ -94,14 +94,17 @@ void MainWindow::setup_menubar() {
   });
   osmium_menu->addAction(dom_inspector_action);
 
+  osmium_menu->addSeparator();
+
   QAction* exit_action = new QAction("Exit");
   exit_action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
   connect(exit_action, &QAction::triggered, this, QApplication::quit);
   osmium_menu->addAction(exit_action);
 
-  QAction* cookie_checkbox = new QAction("Send cookies");
-  cookie_checkbox->setCheckable(true);
-  settings_menu->addAction(cookie_checkbox);
+  m_cookie_checkbox = new QAction("Send cookies");
+  m_cookie_checkbox->setCheckable(true);
+  m_cookie_checkbox->setChecked(true);
+  settings_menu->addAction(m_cookie_checkbox);
 
   menubar->addMenu(osmium_menu);
   menubar->addMenu(settings_menu);
@@ -114,7 +117,8 @@ void MainWindow::navigate(QString url) {
   if (!url.contains("://"))
     url = "http://" + url;
   QNetworkAccessManager* manager = new QNetworkAccessManager();
-  manager->setCookieJar(m_jar);
+  if (m_cookie_checkbox->isChecked())
+    manager->setCookieJar(m_jar);
 
   QNetworkRequest request(url);
   request.setHeader(QNetworkRequest::UserAgentHeader, kUserAgent);
