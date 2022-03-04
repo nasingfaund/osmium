@@ -66,16 +66,6 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
   page_widget->setLayout(m_page_layout);
   layout->addWidget(scroll_area);
 
-  // shortcuts
-  QShortcut* f5 = new QShortcut(Qt::Key_F5, this);
-  connect(f5, &QShortcut::activated, this, [&]() { navigate(m_current_url); });
-
-  QShortcut* f12 = new QShortcut(Qt::Key_F12, this);
-  connect(f12, &QShortcut::activated, this, [&]() {
-    DOMInspector* inspector = new DOMInspector(m_current_root);
-    inspector->show();
-  });
-
   widget->setLayout(layout);
   setWindowTitle("Osmium");
   setGeometry(200, 100, 800, 600);
@@ -90,7 +80,22 @@ void MainWindow::setup_menubar() {
   QMenu* osmium_menu = new QMenu("Osmium");
   QMenu* settings_menu = new QMenu("Settings");
 
+  QAction* refresh_action = new QAction("Refresh");
+  refresh_action->setShortcut(QKeySequence(Qt::Key_F5));
+  connect(refresh_action, &QAction::triggered, this,
+          [&]() { navigate(m_current_url); });
+  osmium_menu->addAction(refresh_action);
+
+  QAction* dom_inspector_action = new QAction("DOM Inspector");
+  dom_inspector_action->setShortcut(QKeySequence(Qt::Key_F12));
+  connect(dom_inspector_action, &QAction::triggered, this, [&]() {
+    DOMInspector* inspector = new DOMInspector(m_current_root);
+    inspector->show();
+  });
+  osmium_menu->addAction(dom_inspector_action);
+
   QAction* exit_action = new QAction("Exit");
+  exit_action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
   connect(exit_action, &QAction::triggered, this, QApplication::quit);
   osmium_menu->addAction(exit_action);
 
