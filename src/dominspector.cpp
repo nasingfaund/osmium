@@ -1,16 +1,28 @@
 #include "dominspector.h"
 
-#include <QDebug>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QTextBrowser>
 
 DOMInspector::DOMInspector(Node root, QWidget *parent) : QWidget(parent) {
-  setGeometry(300, 100, 600, 600);
+  m_root = root;
+
   QTreeWidget *tree = new QTreeWidget();
   tree->setHeaderHidden(true);
   tree->addTopLevelItem(render_tree(root));
 
+  QPushButton *button = new QPushButton("Raw");
+  connect(button, &QPushButton::pressed, this, &DOMInspector::show_dialog);
+
   QVBoxLayout *layout = new QVBoxLayout();
+  layout->addWidget(button);
   layout->addWidget(tree);
   setWindowTitle("DOM Inspector");
+  setGeometry(300, 100, 600, 600);
   setLayout(layout);
 }
 
@@ -36,4 +48,17 @@ QTreeWidgetItem *DOMInspector::render_tree(Node n) {
     item->addChild(render_tree(c));
 
   return item;
+}
+
+void DOMInspector::show_dialog() {
+  QJsonDocument doc(m_root.to_json());
+
+  QDialog *dialog = new QDialog();
+  QVBoxLayout *layout = new QVBoxLayout();
+  QTextBrowser *browser = new QTextBrowser();
+  browser->setText(doc.toJson(QJsonDocument::Indented));
+  layout->addWidget(browser);
+  dialog->setLayout(layout);
+  dialog->setGeometry(350, 150, 800, 600);
+  dialog->show();
 }

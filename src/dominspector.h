@@ -11,5 +11,7 @@ class DOMInspector : public QWidget {
   DOMInspector(Node root, QWidget* parent = nullptr);
 
  private:
+  Node m_root;
   QTreeWidgetItem* render_tree(Node n);
+  void show_dialog();
 };
