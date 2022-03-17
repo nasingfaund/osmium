@@ -76,7 +76,6 @@ MainWindow::MainWindow(char* argv[], QWidget* parent) : QMainWindow(parent) {
 }
 
 void MainWindow::setup_menubar() {
-  QMenuBar* menubar = new QMenuBar();
   QMenu* osmium_menu = new QMenu("Osmium");
   QMenu* settings_menu = new QMenu("Settings");
 
@@ -89,6 +88,8 @@ void MainWindow::setup_menubar() {
   QAction* dom_inspector_action = new QAction("DOM Inspector");
   dom_inspector_action->setShortcut(QKeySequence(Qt::Key_F12));
   connect(dom_inspector_action, &QAction::triggered, this, [&]() {
+    if (m_current_root.type() == NodeType::Null)
+      return;
     DOMInspector* inspector = new DOMInspector(m_current_root);
     inspector->show();
   });
@@ -106,9 +107,8 @@ void MainWindow::setup_menubar() {
   m_cookie_checkbox->setChecked(true);
   settings_menu->addAction(m_cookie_checkbox);
 
-  menubar->addMenu(osmium_menu);
-  menubar->addMenu(settings_menu);
-  setMenuBar(menubar);
+  menuBar()->addMenu(osmium_menu);
+  menuBar()->addMenu(settings_menu);
 }
 
 void MainWindow::navigate(QString url) {
