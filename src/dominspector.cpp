@@ -1,5 +1,6 @@
 #include "dominspector.h"
 
+#include <QDialog>
 #include <QPushButton>
 #include <QTextBrowser>
 

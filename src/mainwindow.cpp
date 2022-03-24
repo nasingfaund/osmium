@@ -198,6 +198,12 @@ void MainWindow::render(Node n, Node parent) {
       QLabel* label = new QLabel();
       label->setPixmap(QPixmap::fromImage(pair.second));
       append(label);
+    } else if (n.text() == "button") {
+      QString content = "";
+      if (n.children().length() > 0)
+        content = n.children()[0].text();
+      append(new QPushButton(content));
+      return;
     }
 
     for (auto c : n.children())
