@@ -8,10 +8,11 @@
 class DOMInspector : public QWidget {
   Q_OBJECT
  public:
-  DOMInspector(Node root, QWidget* parent = nullptr);
+  DOMInspector(Node root, QString src, QWidget* parent = nullptr);
 
  private:
-  Node m_root;
+  QString m_src;
+
   QTreeWidgetItem* render_tree(Node n);
   void show_dialog();
 };

@@ -1,15 +1,11 @@
 #include "dominspector.h"
 
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
-#include <QMessageBox>
 #include <QPushButton>
 #include <QTextBrowser>
 
-DOMInspector::DOMInspector(Node root, QWidget *parent) : QWidget(parent) {
-  m_root = root;
+DOMInspector::DOMInspector(Node root, QString src, QWidget *parent)
+    : QWidget(parent) {
+  m_src = src;
 
   QTreeWidget *tree = new QTreeWidget();
   tree->setHeaderHidden(true);
@@ -51,12 +47,10 @@ QTreeWidgetItem *DOMInspector::render_tree(Node n) {
 }
 
 void DOMInspector::show_dialog() {
-  QJsonDocument doc(m_root.to_json());
-
   QDialog *dialog = new QDialog();
   QVBoxLayout *layout = new QVBoxLayout();
   QTextBrowser *browser = new QTextBrowser();
-  browser->setText(doc.toJson(QJsonDocument::Indented));
+  browser->document()->setPlainText(m_src);
   layout->addWidget(browser);
   dialog->setLayout(layout);
   dialog->setGeometry(350, 150, 800, 600);

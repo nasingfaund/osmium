@@ -29,6 +29,7 @@ class MainWindow : public QMainWindow {
   QAction* m_cookie_checkbox;
 
   QString m_current_url;
+  QString m_current_src = "";
   Node m_current_root = Node();
   QVector<QString> m_history;
   // TODO: QNetworkCookieJar does not implement permanent storage: it only keeps

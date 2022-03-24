@@ -90,7 +90,7 @@ void MainWindow::setup_menubar() {
   connect(dom_inspector_action, &QAction::triggered, this, [&]() {
     if (m_current_root.type() == NodeType::Null)
       return;
-    DOMInspector* inspector = new DOMInspector(m_current_root);
+    DOMInspector* inspector = new DOMInspector(m_current_root, m_current_src);
     inspector->show();
   });
   osmium_menu->addAction(dom_inspector_action);
@@ -163,6 +163,7 @@ void MainWindow::handle_reply(QNetworkReply* reply) {
   reply->deleteLater();
 
   m_current_root = root;
+  m_current_src = body;
   clear_page(m_page_layout);
   new_line();
   m_statusbar->setText(
