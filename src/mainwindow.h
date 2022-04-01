@@ -1,10 +1,13 @@
 #pragma once
 #include <QApplication>
+#include <QDialog>
 #include <QMainWindow>
 #include <QMenuBar>
+#include <QTableWidget>
+#include <QTextBrowser>
+#include <QTreeWidget>
 #include <QWidget>
 
-#include "dominspector.h"
 #include "node.h"
 #include "pagewidget.h"
 
@@ -22,4 +25,8 @@ class MainWindow : public QMainWindow {
   QAction* m_cookie_checkbox;
 
   void setup_menubar();
+  void show_dom_inspector();
+  void show_cookie_inspector();
+  void show_src_dialog();
+  QTreeWidgetItem* render_dom_tree(Node n);
 };

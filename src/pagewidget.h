@@ -21,8 +21,9 @@ class PageWidget : public QWidget {
   void navigate(QString url);
 
   QString current_page_source() { return m_current_src; }
-  QString current_url() { return m_current_url; }
+  QString url() { return m_current_url; }
   Node current_root() { return m_current_root; }
+  QNetworkCookieJar* jar() { return m_jar; }
 
  private:
   const QVector<QString> kRenderBlacklist = {"style", "script", "head"};
