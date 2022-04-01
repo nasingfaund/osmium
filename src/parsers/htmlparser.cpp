@@ -1,6 +1,6 @@
 #include "htmlparser.h"
 
-Node parse(QString input) {
+Node parse_html(QString input) {
   QVector<Node> nodes = HTMLParser(input).parse_nodes();
 
   if (nodes.size() == 1)

@@ -25,4 +25,4 @@ class HTMLParser : public Parser {
   QString parse_attribute_value();
 };
 
-Node parse(QString input);
+Node parse_html(QString input);

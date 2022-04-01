@@ -8,14 +8,14 @@
 
 const QString kUserAgent = "Mozilla/5.0 (Unknown) Osmium";
 
-QString make_absolute(QString current_url, QString url) {
+inline QString make_absolute(QString current_url, QString url) {
   if (url.contains("://"))
     return url;
 
   return QUrl(current_url).resolved(QUrl(url)).toString();
 }
 
-QPair<bool, QImage> load_image_from_url(QString url) {
+inline QPair<bool, QImage> load_image_from_url(QString url) {
   QNetworkAccessManager manager;
   QNetworkRequest req = QNetworkRequest(QUrl(url));
   req.setHeader(QNetworkRequest::UserAgentHeader, kUserAgent);
