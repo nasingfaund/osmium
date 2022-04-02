@@ -15,8 +15,20 @@ inline QString make_absolute(QString current_url, QString url) {
   return QUrl(current_url).resolved(QUrl(url)).toString();
 }
 
-inline QPair<bool, QImage> load_image_from_url(QString url) {
+inline void apply_proxy(QString proxy, QNetworkAccessManager* nam) {
+  if (proxy.length() == 0)
+    return;
+
+  QNetworkProxy p;
+  p.setType(QNetworkProxy::HttpProxy);
+  p.setHostName(proxy.split(":")[0]);
+  p.setPort(proxy.split(":")[1].toUInt());
+  nam->setProxy(p);
+}
+
+inline QPair<bool, QImage> load_image_from_url(QString url, QString proxy) {
   QNetworkAccessManager manager;
+  apply_proxy(proxy, &manager);
   QNetworkRequest req = QNetworkRequest(QUrl(url));
   req.setHeader(QNetworkRequest::UserAgentHeader, kUserAgent);
 

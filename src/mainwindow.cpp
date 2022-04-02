@@ -50,6 +50,7 @@ void MainWindow::navigate(QString url) {
   if (!url.contains("://"))
     url = "http://" + url;
   QNetworkAccessManager *manager = new QNetworkAccessManager();
+  apply_proxy(m_proxy, manager);
   if (ui->actionSend_cookies->isChecked())
     manager->setCookieJar(m_jar);
 
@@ -121,7 +122,7 @@ void MainWindow::render(Node n, Node parent) {
       append(new QLabel("•"));
     } else if (n.text() == "img") {
       QString url = make_absolute(m_current_url, n.attrs()["src"]);
-      QPair<bool, QImage> pair = load_image_from_url(url);
+      QPair<bool, QImage> pair = load_image_from_url(url, m_proxy);
       if (!pair.first) {
         qWarning() << "Couldn't load" << url;
         return;
