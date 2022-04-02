@@ -4,3 +4,5 @@ CONFIG += c++17
 
 SOURCES = $$files(src/*.cpp, true)
 HEADERS = $$files(src/*.h, true)
+
+FORMS = $$files(src/*.ui, true)
