@@ -1,21 +1,12 @@
 #pragma once
-#include <QApplication>
+#include <QAction>
 #include <QDialog>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QLineEdit>
 #include <QMainWindow>
-#include <QMenuBar>
-#include <QNetworkCookie>
-#include <QNetworkCookieJar>
-#include <QNetworkReply>
-#include <QPushButton>
-#include <QScrollArea>
 #include <QTableWidget>
 #include <QTextBrowser>
-#include <QTreeWidget>
-#include <QVBoxLayout>
-#include <QWidget>
+#include <QTreeWidgetItem>
 
 #include "net.h"
 #include "node.h"
@@ -47,7 +38,6 @@ class MainWindow : public QMainWindow {
   QHBoxLayout* m_line = nullptr;
 
   QString m_current_url;
-  QString m_current_src = "";
   Node m_current_root = Node();
   QVector<QString> m_history;
   QNetworkCookieJar* m_jar;
@@ -61,7 +51,6 @@ class MainWindow : public QMainWindow {
 
   void show_dom_inspector();
   void show_cookie_inspector();
-  void show_src_dialog();
   QTreeWidgetItem* render_dom_tree(Node n);
 };
 

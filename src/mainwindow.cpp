@@ -93,7 +93,6 @@ void MainWindow::handle_reply(QNetworkReply *reply) {
   reply->deleteLater();
 
   m_current_root = root;
-  m_current_src = body;
   clear_page(ui->page_layout);
   new_line();
   ui->statusbar->setText(
@@ -263,11 +262,7 @@ void MainWindow::show_dom_inspector() {
   tree->setHeaderHidden(true);
   tree->addTopLevelItem(render_dom_tree(m_current_root));
 
-  QPushButton *button = new QPushButton("Raw");
-  connect(button, &QPushButton::pressed, this, &MainWindow::show_src_dialog);
-
   QVBoxLayout *layout = new QVBoxLayout();
-  layout->addWidget(button);
   layout->addWidget(tree);
 
   QDialog *dialog = new QDialog();
@@ -301,17 +296,6 @@ QTreeWidgetItem *MainWindow::render_dom_tree(Node n) {
     item->addChild(render_dom_tree(c));
 
   return item;
-}
-
-void MainWindow::show_src_dialog() {
-  QDialog *dialog = new QDialog();
-  QVBoxLayout *layout = new QVBoxLayout();
-  QTextBrowser *browser = new QTextBrowser();
-  browser->document()->setPlainText(m_current_src);
-  layout->addWidget(browser);
-  dialog->setLayout(layout);
-  dialog->setGeometry(350, 150, 800, 600);
-  dialog->show();
 }
 
 void MainWindow::show_cookie_inspector() {
