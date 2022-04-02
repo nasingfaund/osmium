@@ -17,6 +17,9 @@ MainWindow::MainWindow(char *argv[], QWidget *parent)
 
   connect(ui->actionExit, &QAction::triggered, this, QApplication::quit);
 
+  connect(ui->actionProxy, &QAction::triggered, this,
+          &MainWindow::show_proxy_config);
+
   // ui
   connect(ui->back_button, &QPushButton::clicked, this, [=]() {
     if (m_history.size() < 2)
@@ -324,4 +327,14 @@ void MainWindow::show_cookie_inspector() {
   dialog->setGeometry(350, 150, 800, 300);
   dialog->setWindowTitle("Cookie Inspector");
   dialog->show();
+}
+
+void MainWindow::show_proxy_config() {
+  bool ok;
+  QString proxy =
+      QInputDialog::getText(this, "Change Proxy", "Enter new proxy (host:port)",
+                            QLineEdit::Normal, m_proxy, &ok);
+  if (ok)
+    m_proxy = proxy;
+  // TODO
 }

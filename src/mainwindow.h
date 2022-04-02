@@ -2,6 +2,7 @@
 #include <QAction>
 #include <QDialog>
 #include <QHBoxLayout>
+#include <QInputDialog>
 #include <QLabel>
 #include <QMainWindow>
 #include <QTableWidget>
@@ -41,6 +42,7 @@ class MainWindow : public QMainWindow {
   Node m_current_root = Node();
   QVector<QString> m_history;
   QNetworkCookieJar* m_jar;
+  QString m_proxy;
 
   void navigate(QString url);
   void handle_reply(QNetworkReply* reply);
@@ -51,6 +53,7 @@ class MainWindow : public QMainWindow {
 
   void show_dom_inspector();
   void show_cookie_inspector();
+  void show_proxy_config();
   QTreeWidgetItem* render_dom_tree(Node n);
 };
 

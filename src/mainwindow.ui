@@ -121,6 +121,7 @@
     <property name="title">
      <string>Settings</string>
     </property>
+    <addaction name="actionProxy"/>
     <addaction name="actionSend_cookies"/>
    </widget>
    <addaction name="menuOsmium"/>
@@ -164,6 +165,11 @@
    </property>
    <property name="text">
     <string>Send cookies</string>
+   </property>
+  </action>
+  <action name="actionProxy">
+   <property name="text">
+    <string>Proxy</string>
    </property>
   </action>
  </widget>
