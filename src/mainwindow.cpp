@@ -55,7 +55,7 @@ void MainWindow::navigate(QString url) {
     manager->setCookieJar(m_jar);
 
   QNetworkRequest request(url);
-  request.setHeader(QNetworkRequest::UserAgentHeader, kUserAgent);
+  request.setHeader(QNetworkRequest::UserAgentHeader, get_user_agent());
 
   ui->statusbar->setText("Navigating to " + url + "...");
   manager->get(request);
@@ -158,7 +158,6 @@ void MainWindow::render(Node n, Node parent) {
 
     QFont font = label->font();
     font.setPointSize(11);
-    font.setFamily("Fira Sans");
 
     if (parent.text() == "h1") {
       font.setWeight(QFont::Bold);
@@ -337,5 +336,4 @@ void MainWindow::show_proxy_config() {
                             QLineEdit::Normal, m_proxy, &ok);
   if (ok)
     m_proxy = proxy;
-  // TODO
 }

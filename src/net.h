@@ -3,10 +3,16 @@
 #include <QObject>
 #include <QPair>
 #include <QString>
+#include <QSysInfo>
 #include <QUrl>
 #include <QtNetwork/QtNetwork>
 
-const QString kUserAgent = "Mozilla/5.0 (Unknown) Osmium";
+inline QString get_user_agent() {
+  return QString("Mozilla/5.0 (%1%2 %3) Osmium/1.0")
+      .arg(QSysInfo::kernelType()[0].toUpper())
+      .arg(QSysInfo::kernelType().mid(1).toLower())
+      .arg(QSysInfo::currentCpuArchitecture());
+}
 
 inline QString make_absolute(QString current_url, QString url) {
   if (url.contains("://"))
@@ -19,10 +25,17 @@ inline void apply_proxy(QString proxy, QNetworkAccessManager* nam) {
   if (proxy.length() == 0)
     return;
 
+  auto split = proxy.split(":");
+
+  if (split.length() != 2) {
+    qWarning() << "Invalid proxy (use host:port format)";
+    return;
+  }
+
   QNetworkProxy p;
   p.setType(QNetworkProxy::HttpProxy);
-  p.setHostName(proxy.split(":")[0]);
-  p.setPort(proxy.split(":")[1].toUInt());
+  p.setHostName(split.at(0));
+  p.setPort(split.at(1).toUShort());
   nam->setProxy(p);
 }
 
@@ -30,7 +43,7 @@ inline QPair<bool, QImage> load_image_from_url(QString url, QString proxy) {
   QNetworkAccessManager manager;
   apply_proxy(proxy, &manager);
   QNetworkRequest req = QNetworkRequest(QUrl(url));
-  req.setHeader(QNetworkRequest::UserAgentHeader, kUserAgent);
+  req.setHeader(QNetworkRequest::UserAgentHeader, get_user_agent());
 
   QNetworkReply* reply = manager.get(req);
   QEventLoop loop;
