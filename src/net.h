@@ -8,10 +8,11 @@
 #include <QtNetwork/QtNetwork>
 
 inline QString get_user_agent() {
-  return QString("Mozilla/5.0 (%1%2 %3) Osmium/1.0")
-      .arg(QSysInfo::kernelType()[0].toUpper())
-      .arg(QSysInfo::kernelType().mid(1).toLower())
-      .arg(QSysInfo::currentCpuArchitecture());
+  QString arch = QSysInfo::currentCpuArchitecture();
+  QString os = QSysInfo::kernelType()[0].toUpper() +
+               QSysInfo::kernelType().mid(1).toLower();
+
+  return QString("Mozilla/5.0 (%1 %2) Osmium/1.0").arg(os).arg(arch);
 }
 
 inline QString make_absolute(QString current_url, QString url) {

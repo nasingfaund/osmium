@@ -81,7 +81,7 @@ Node HTMLParser::parse_element() {
 }
 
 QPair<QString, QString> HTMLParser::parse_attribute() {
-  QString name = consume_alphanumeric("-:");
+  QString name = consume_alphanumeric("-:_");
   consume_whitespace();
 
   // check if attribute has a value
@@ -114,14 +114,19 @@ QString HTMLParser::parse_attribute_value() {
 
 QMap<QString, QString> HTMLParser::parse_attributes() {
   QMap<QString, QString> attributes;
+
   while (true) {
     consume_whitespace();
+
     if (rest().startsWith("/>"))
       consume();
+
     if (peek() == '>')
       break;
+
     QPair<QString, QString> pair = parse_attribute();
     attributes[pair.first] = pair.second;
   }
+
   return attributes;
 }
