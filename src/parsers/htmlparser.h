@@ -16,6 +16,10 @@ class HTMLParser : public Parser {
   const QVector<QString> kVoidElements = {
       "area",  "base", "br",   "col",   "embed",  "hr",    "img",
       "input", "link", "meta", "param", "source", "track", "wbr"};
+  const QMap<QString, QString> kHtmlEntities = {
+      {"copy", "©"}, {"reg", "®"}, {"trade", "™"}, {"deg", "°"},
+      {"lt", "<"},   {"gt", ">"},  {"amp", "&"},
+  };
 
   Node parse_node();
   Node parse_element();

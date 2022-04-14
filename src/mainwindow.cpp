@@ -228,8 +228,6 @@ void MainWindow::render(Node n, Node parent) {
     label->setPalette(palette);
     label->setFont(font);
     append(label);
-  } else {
-    assert(false);
   }
 }
 

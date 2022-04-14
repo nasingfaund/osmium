@@ -35,8 +35,15 @@ Node HTMLParser::parse_node() {
 
 Node HTMLParser::parse_textnode() {
   QString content;
+
   while (!eof() && peek() != '<')
     content.push_back(consume());
+
+  for (auto entity : kHtmlEntities.keys()) {
+    qDebug() << "&" + entity + ";";
+    content = content.replace("&" + entity + ";", kHtmlEntities[entity]);
+  }
+
   return Node(content);
 }
 
