@@ -1,14 +1,10 @@
 #pragma once
 #include <QAction>
-#include <QDialog>
 #include <QHBoxLayout>
-#include <QInputDialog>
 #include <QLabel>
 #include <QMainWindow>
-#include <QTableWidget>
-#include <QTextBrowser>
-#include <QTreeWidgetItem>
 
+#include "dialogs.h"
 #include "net.h"
 #include "node.h"
 #include "parsers/cssparser.h"
@@ -50,11 +46,6 @@ class MainWindow : public QMainWindow {
   void append(QWidget* d);
   void new_line();
   void clear_page(QLayout* layout);
-
-  void show_dom_inspector();
-  void show_cookie_inspector();
-  void show_proxy_config();
-  QTreeWidgetItem* render_dom_tree(Node n);
 };
 
 class ClickableLabel : public QLabel {

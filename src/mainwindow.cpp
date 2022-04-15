@@ -9,16 +9,14 @@ MainWindow::MainWindow(char *argv[], QWidget *parent)
   // menubar
   connect(ui->actionRefresh, &QAction::triggered, this,
           [&]() { navigate(m_current_url); });
-
-  connect(ui->actionDOMInspector, &QAction::triggered, this, [&]() {
-    if (m_current_root.type() != NodeType::Null)
-      show_dom_inspector();
-  });
-
+  connect(ui->actionDOMInspector, &QAction::triggered, this,
+          [&]() { show_dom_inspector(m_current_root); });
+  connect(ui->actionCookie_Inspector, &QAction::triggered, this,
+          [&]() { show_cookie_inspector(m_jar, m_current_url); });
   connect(ui->actionExit, &QAction::triggered, this, QApplication::quit);
 
   connect(ui->actionProxy, &QAction::triggered, this,
-          &MainWindow::show_proxy_config);
+          [&]() { m_proxy = show_proxy_config(m_proxy); });
 
   // ui
   connect(ui->back_button, &QPushButton::clicked, this, [=]() {
@@ -256,82 +254,4 @@ void MainWindow::clear_page(QLayout *layout) {
       delete item->widget();
     }
   }
-}
-
-void MainWindow::show_dom_inspector() {
-  QTreeWidget *tree = new QTreeWidget();
-  tree->setHeaderHidden(true);
-  tree->addTopLevelItem(render_dom_tree(m_current_root));
-
-  QVBoxLayout *layout = new QVBoxLayout();
-  layout->addWidget(tree);
-
-  QDialog *dialog = new QDialog();
-  dialog->setLayout(layout);
-  dialog->setWindowTitle("DOM Inspector");
-  dialog->setGeometry(300, 100, 600, 600);
-  dialog->show();
-}
-
-QTreeWidgetItem *MainWindow::render_dom_tree(Node n) {
-  QTreeWidgetItem *item = new QTreeWidgetItem();
-  QString content = n.text();
-
-  switch (n.type()) {
-    case NodeType::Element:
-      item->setIcon(0, style()->standardIcon(QStyle::SP_DirIcon));
-
-      for (auto p : n.attrs().keys())
-        content += " " + p + "=" + n.attrs()[p];
-      item->setText(0, content);
-      break;
-    case NodeType::TextNode:
-      item->setIcon(0, style()->standardIcon(QStyle::SP_FileIcon));
-      item->setText(0, content);
-      break;
-    case NodeType::Null:
-      break;
-  }
-
-  for (auto c : n.children())
-    item->addChild(render_dom_tree(c));
-
-  return item;
-}
-
-void MainWindow::show_cookie_inspector() {
-  QTableWidget *table = new QTableWidget();
-
-  table->setColumnCount(4);
-  table->setHorizontalHeaderLabels({"Name", "Value", "Path", "HTTP only?"});
-  table->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
-  auto cookies = m_jar->cookiesForUrl(m_current_url);
-  table->setRowCount(cookies.length());
-
-  for (auto cookie : cookies) {
-    int i = cookies.indexOf(cookie);
-    table->setItem(i, 0, new QTableWidgetItem(QString(cookie.name())));
-    table->setItem(i, 1, new QTableWidgetItem(QString(cookie.value())));
-    table->setItem(i, 2, new QTableWidgetItem(cookie.path()));
-    table->setItem(i, 3,
-                   new QTableWidgetItem(cookie.isHttpOnly() ? "Yes" : "No"));
-  }
-
-  QDialog *dialog = new QDialog();
-  QVBoxLayout *layout = new QVBoxLayout();
-  layout->addWidget(table);
-  dialog->setLayout(layout);
-  dialog->setGeometry(350, 150, 800, 300);
-  dialog->setWindowTitle("Cookie Inspector");
-  dialog->show();
-}
-
-void MainWindow::show_proxy_config() {
-  bool ok;
-  QString proxy =
-      QInputDialog::getText(this, "Change Proxy", "Enter new proxy (host:port)",
-                            QLineEdit::Normal, m_proxy, &ok);
-  if (ok)
-    m_proxy = proxy;
 }
