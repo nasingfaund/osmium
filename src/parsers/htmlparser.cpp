@@ -40,7 +40,6 @@ Node HTMLParser::parse_textnode() {
     content.push_back(consume());
 
   for (auto entity : kHtmlEntities.keys()) {
-    qDebug() << "&" + entity + ";";
     content = content.replace("&" + entity + ";", kHtmlEntities[entity]);
   }
 
@@ -87,6 +86,28 @@ Node HTMLParser::parse_element() {
   return Node(tag_name, attrs, children);
 }
 
+QMap<QString, QString> HTMLParser::parse_attributes() {
+  QMap<QString, QString> attributes;
+
+  while (true) {
+    consume_whitespace();
+
+    if (rest().startsWith("/>"))
+      consume();
+
+    if (peek() == '>')
+      break;
+
+    int start_pos = m_pos;
+    QPair<QString, QString> pair = parse_attribute();
+    PARSER_ASSERT_MSG(m_pos > start_pos, "Invalid attribute name");
+
+    attributes[pair.first] = pair.second;
+  }
+
+  return attributes;
+}
+
 QPair<QString, QString> HTMLParser::parse_attribute() {
   QString name = consume_alphanumeric("-:_");
   consume_whitespace();
@@ -117,23 +138,4 @@ QString HTMLParser::parse_attribute_value() {
   }
 
   return value;
-}
-
-QMap<QString, QString> HTMLParser::parse_attributes() {
-  QMap<QString, QString> attributes;
-
-  while (true) {
-    consume_whitespace();
-
-    if (rest().startsWith("/>"))
-      consume();
-
-    if (peek() == '>')
-      break;
-
-    QPair<QString, QString> pair = parse_attribute();
-    attributes[pair.first] = pair.second;
-  }
-
-  return attributes;
 }

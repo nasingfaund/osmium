@@ -17,8 +17,10 @@ class HTMLParser : public Parser {
       "area",  "base", "br",   "col",   "embed",  "hr",    "img",
       "input", "link", "meta", "param", "source", "track", "wbr"};
   const QMap<QString, QString> kHtmlEntities = {
-      {"copy", "©"}, {"reg", "®"}, {"trade", "™"}, {"deg", "°"},
-      {"lt", "<"},   {"gt", ">"},  {"amp", "&"},
+      {"copy", "©"},  {"reg", "®"},    {"trade", "™"}, {"deg", "°"},
+      {"lt", "<"},    {"gt", ">"},     {"amp", "&"},   {"nbsp", " "},
+      {"quot", "\""}, {"hellip", "…"}, {"mdash", "—"}, {"bull", "•"},
+      {"larr", "←"},  {"rarr", "→"},   {"darr", "↓"},  {"uarr", "↑"},
   };
 
   Node parse_node();
