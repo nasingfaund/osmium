@@ -39,9 +39,11 @@ Node HTMLParser::parse_textnode() {
   while (!eof() && peek() != '<')
     content.push_back(consume());
 
-  for (auto entity : kHtmlEntities.keys()) {
+  for (auto entity : kHtmlEntities.keys())
     content = content.replace("&" + entity + ";", kHtmlEntities[entity]);
-  }
+
+  for (int charcode = 0; charcode < 256; charcode++)
+    content = content.replace(QString("&#%1;").arg(charcode), QChar(charcode));
 
   return Node(content);
 }

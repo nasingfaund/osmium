@@ -18,8 +18,8 @@ inline QTreeWidgetItem *render_dom_tree(Node n) {
     case NodeType::Element:
       item->setIcon(0, QApplication::style()->standardIcon(QStyle::SP_DirIcon));
 
-      for (auto p : n.attrs().keys())
-        content += " " + p + "=" + n.attrs()[p];
+      for (auto k : n.attrs().keys())
+        content += QString(" %1=\"%2\"").arg(k).arg(n.attrs()[k]);
       item->setText(0, content);
       break;
     case NodeType::TextNode:
