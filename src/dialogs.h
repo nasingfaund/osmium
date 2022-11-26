@@ -10,6 +10,7 @@
 
 #include "node.h"
 
+namespace Dialog {
 inline QTreeWidgetItem *render_dom_tree(Node n) {
   QTreeWidgetItem *item = new QTreeWidgetItem();
   QString content = n.text();
@@ -90,3 +91,4 @@ inline QString show_proxy_config(QString proxy) {
                                             QLineEdit::Normal, proxy, &ok);
   return ok ? new_proxy : proxy;
 }
+}  // namespace Dialog

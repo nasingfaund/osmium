@@ -10,13 +10,13 @@ MainWindow::MainWindow(char *argv[], QWidget *parent)
   connect(ui->actionRefresh, &QAction::triggered, this,
           [&]() { navigate(m_current_url); });
   connect(ui->actionDOMInspector, &QAction::triggered, this,
-          [&]() { show_dom_inspector(m_current_root); });
+          [&]() { Dialog::show_dom_inspector(m_current_root); });
   connect(ui->actionCookie_Inspector, &QAction::triggered, this,
-          [&]() { show_cookie_inspector(m_jar, m_current_url); });
+          [&]() { Dialog::show_cookie_inspector(m_jar, m_current_url); });
   connect(ui->actionExit, &QAction::triggered, this, QApplication::quit);
 
   connect(ui->actionProxy, &QAction::triggered, this,
-          [&]() { m_proxy = show_proxy_config(m_proxy); });
+          [&]() { m_proxy = Dialog::show_proxy_config(m_proxy); });
 
   // ui
   connect(ui->back_button, &QPushButton::clicked, this, [=]() {
@@ -48,12 +48,12 @@ void MainWindow::navigate(QString url) {
   if (!url.contains("://"))
     url = "http://" + url;
   QNetworkAccessManager *manager = new QNetworkAccessManager();
-  apply_proxy(m_proxy, manager);
+  Net::apply_proxy(m_proxy, manager);
   if (ui->actionSend_cookies->isChecked())
     manager->setCookieJar(m_jar);
 
   QNetworkRequest request(url);
-  request.setHeader(QNetworkRequest::UserAgentHeader, get_user_agent());
+  request.setHeader(QNetworkRequest::UserAgentHeader, Net::get_user_agent());
 
   ui->statusbar->setText("Navigating to " + url + "...");
   manager->get(request);
@@ -74,7 +74,7 @@ void MainWindow::handle_reply(QNetworkReply *reply) {
   int status_code =
       reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
   if (300 < status_code && status_code < 400) {
-    navigate(make_absolute(m_current_url, reply->rawHeader("Location")));
+    navigate(Net::make_absolute(m_current_url, reply->rawHeader("Location")));
     return;
   }
 
@@ -119,8 +119,8 @@ void MainWindow::render(Node n, Node parent) {
     } else if (n.text() == "li") {
       append(new QLabel("•"));
     } else if (n.text() == "img") {
-      QString url = make_absolute(m_current_url, n.attrs()["src"]);
-      QPair<bool, QImage> pair = load_image_from_url(url, m_proxy);
+      QString url = Net::make_absolute(m_current_url, n.attrs()["src"]);
+      QPair<bool, QImage> pair = Net::load_image_from_url(url, m_proxy);
       if (!pair.first) {
         qWarning() << "Couldn't load" << url;
         return;
@@ -180,7 +180,7 @@ void MainWindow::render(Node n, Node parent) {
       label->setPalette(palette);
 
       QString href = parent.attrs().value("href");
-      label->href = make_absolute(m_current_url, href);
+      label->href = Net::make_absolute(m_current_url, href);
 
       connect(label, &ClickableLabel::clicked, this,
               std::bind([&](ClickableLabel *label) { navigate(label->href); },

@@ -7,6 +7,7 @@
 #include <QUrl>
 #include <QtNetwork/QtNetwork>
 
+namespace Net {
 inline QString get_user_agent() {
   QString arch = QSysInfo::currentCpuArchitecture();
   QString os = QSysInfo::kernelType()[0].toUpper() +
@@ -58,3 +59,4 @@ inline QPair<bool, QImage> load_image_from_url(QString url, QString proxy) {
 
   return {ok, img};
 }
+}  // namespace Net
