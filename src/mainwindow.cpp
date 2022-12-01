@@ -131,12 +131,6 @@ void MainWindow::render(Node n, Node parent) {
       QLabel *label = new QLabel();
       label->setPixmap(QPixmap::fromImage(pair.second));
       append(label);
-    } else if (n.text() == "button") {
-      QString content = "";
-      if (n.children().length() > 0)
-        content = n.children()[0].text();
-      append(new QPushButton(content));
-      return;
     }
 
     for (auto c : n.children())
@@ -181,9 +175,8 @@ void MainWindow::render(Node n, Node parent) {
     } else if (parent.text() == "s") {
       font.setStrikeOut(true);
     } else if (parent.text() == "a" && parent.attrs().contains("href")) {
-      QPalette palette = label->palette();
       palette.setColor(QPalette::WindowText, QColor(40, 161, 209));
-      label->setPalette(palette);
+      label->setStyleSheet("text-decoration: underline");
 
       QString href = parent.attrs().value("href");
       label->href = Net::make_absolute(m_current_url, href);
@@ -193,6 +186,12 @@ void MainWindow::render(Node n, Node parent) {
                         label));
     } else if (parent.text() == "title") {
       setWindowTitle(n.text() + " - Osmium");
+      return;
+    } else if (parent.text() == "button") {
+      // TODO: render buttons with non-plaintext content
+      QPushButton *button = new QPushButton(n.text());
+      button->setStyleSheet("color: black");
+      append(button);
       return;
     }
 
