@@ -89,6 +89,9 @@
          <height>485</height>
         </rect>
        </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: white;</string>
+       </property>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <layout class="QVBoxLayout" name="page_layout"/>

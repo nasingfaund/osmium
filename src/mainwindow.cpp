@@ -117,7 +117,9 @@ void MainWindow::render(Node n, Node parent) {
     if (n.text() == "br") {
       new_line();
     } else if (n.text() == "li") {
-      append(new QLabel("•"));
+      QLabel *label = new QLabel("•");
+      label->setStyleSheet("color: black; font-weight: bold; font-size: 15px");
+      append(label);
     } else if (n.text() == "img") {
       QString url = Net::make_absolute(m_current_url, n.attrs()["src"]);
       QPair<bool, QImage> pair = Net::load_image_from_url(url, m_proxy);
@@ -153,9 +155,13 @@ void MainWindow::render(Node n, Node parent) {
     ClickableLabel *label = new ClickableLabel();
     label->setTextFormat(Qt::PlainText);
     label->setText(content);
+    label->setAutoFillBackground(true);
 
     QFont font = label->font();
     font.setPointSize(11);
+
+    QPalette palette = label->palette();
+    palette.setColor(QPalette::WindowText, QColor(0, 0, 0));
 
     if (parent.text() == "h1") {
       font.setWeight(QFont::Bold);
@@ -190,38 +196,7 @@ void MainWindow::render(Node n, Node parent) {
       return;
     }
 
-    // style rendering
-    QPalette palette = label->palette();
-
-    if (parent.style().count("color"))
-      palette.setColor(QPalette::WindowText, QColor(parent.style()["color"]));
-
-    if (parent.style().count("background-color")) {
-      palette.setColor(label->backgroundRole(),
-                       QColor(parent.style()["background-color"]));
-      label->setAutoFillBackground(true);
-    }
-
-    if (parent.style().count("font-family"))
-      font.setFamily(parent.style()["font-family"]);
-
-    if (parent.style().count("font-size")) {
-      QString size = parent.style()["font-size"];
-      if (size.endsWith("px")) {
-        size = size.left(size.length() - 2);
-        font.setPointSizeF(size.toFloat());
-      }
-    }
-
-    if (parent.style().count("text-align")) {
-      QString text_align = parent.style()["text-align"];
-      if (text_align == "left")
-        m_line->setAlignment(Qt::AlignLeft);
-      else if (text_align == "center")
-        m_line->setAlignment(Qt::AlignCenter);
-      else if (text_align == "right")
-        m_line->setAlignment(Qt::AlignRight);
-    }
+    Style::apply_style(parent.style(), palette, font, m_line);
 
     label->setPalette(palette);
     label->setFont(font);

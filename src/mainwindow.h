@@ -9,6 +9,7 @@
 #include "node.h"
 #include "parsers/cssparser.h"
 #include "parsers/htmlparser.h"
+#include "style.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
